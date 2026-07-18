@@ -8,6 +8,12 @@
 # production
 /build
 
+# cloudflare workers
+/.open-next/
+/.wrangler/
+.dev.vars
+cloudflare-env.d.ts
+
 # local environment
 .env*
 !.env.example
