@@ -1,0 +1,30 @@
+name: 质量检查
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 检出代码仓库
+        uses: actions/checkout@v4
+
+      - name: 配置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: 安装锁定版本的依赖
+        run: npm ci
+
+      - name: 执行代码规范检查、类型检查和构建
+        run: npm run check
