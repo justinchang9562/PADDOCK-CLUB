@@ -191,6 +191,7 @@ img { display: block; max-width: 100%; }
 .home-index-wordmark span:first-child { margin-right: .16em; }
 .home-index-visual { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
 .home-index-photo { object-fit: cover; object-position: center 58%; filter: saturate(.42) contrast(1.18) brightness(.82); transform: scale(1.015); }
+.home-index-photo, [data-home-reveal] { will-change: transform, opacity; }
 .home-index-photo-label { position: absolute; z-index: 4; right: 25px; bottom: 21px; color: rgba(255,255,255,.58); font: 700 8px/1 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing: .12em; }
 .home-index-copy { position: absolute; z-index: 5; bottom: 38px; left: 42px; width: min(520px, 48%); }
 .home-index-copy h2 { max-width: 520px; margin: 17px 0 14px; color: #fff; font-size: clamp(36px,4.2vw,58px); line-height: .94; letter-spacing: -.055em; }

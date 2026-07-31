@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DriverCard } from "@/components/entity-cards";
+import { HomeScrollAnimations } from "@/components/home-scroll-animations";
 import { Icon } from "@/components/icons";
 import { NewsCard } from "@/components/news-card";
 import { RaceCard } from "@/components/race-card";
@@ -27,7 +28,8 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const nearbyRaces = races2026.filter((race) => race.round >= nextRace.round - 1 && race.round <= nextRace.round + 2).slice(0, 3);
 
   return (
-    <main className="page-main flush-top">
+    <HomeScrollAnimations>
+      <main className="page-main flush-top">
       <section className="home-index-hero">
         <div className="home-index-rail" aria-hidden="true">
           <span>F1 / DATA / REFERENCE</span>
@@ -70,7 +72,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
       </section>
 
       <section className="page-section compact">
-        <div className="current-strip">
+        <div className="current-strip" data-home-reveal>
           <div className="current-strip-copy">
             <span className={`live-or-next ${nextRace.status}`}>{nextRace.status === "live" ? (lang === "zh" ? "本周末进行中" : "Live this weekend") : (lang === "zh" ? "下一站" : "Up next")}</span>
             <strong>R{nextRace.round} · {t(nextRace.name, lang)}</strong>
@@ -84,7 +86,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      <section className="page-section">
+      <section className="page-section" data-home-reveal>
         <SectionHeading
           eyebrow={lang === "zh" ? "赛季脉搏" : "Season pulse"}
           title={lang === "zh" ? "现在与接下来。" : "Now and next."}
@@ -95,7 +97,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         <div className="card-grid three-col">{nearbyRaces.map((race, index) => <RaceCard key={race.round} race={race} locale={lang} featured={index === 1 && race.status === "live"} />)}</div>
       </section>
 
-      <section className="page-section">
+      <section className="page-section" data-home-reveal>
         <SectionHeading eyebrow={lang === "zh" ? "冠军走势" : "Championship"} title={lang === "zh" ? "积分，一眼看清。" : "Standings at a glance."} />
         <div className="standings-split">
           <div>
@@ -109,7 +111,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      <section className="page-section">
+      <section className="page-section" data-home-reveal>
         <SectionHeading
           eyebrow={lang === "zh" ? "围场人物" : "Paddock people"}
           title={lang === "zh" ? "不只是一个名字。" : "More than a name."}
@@ -120,7 +122,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         <div className="card-grid three-col">{drivers.slice(0, 3).map((driver) => <DriverCard key={driver.id} driver={driver} locale={lang} />)}</div>
       </section>
 
-      <section className="page-section">
+      <section className="page-section" data-home-reveal>
         <div className="explore-panel">
           <div className="explore-intro">
             <span className="eyebrow">{lang === "zh" ? "F1 百科" : "F1 reference"}</span>
@@ -135,10 +137,11 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         </div>
       </section>
 
-      <section className="page-section">
+      <section className="page-section" data-home-reveal>
         <SectionHeading eyebrow={lang === "zh" ? "来源精选" : "Source edit"} title={lang === "zh" ? "只保留有用的资讯。" : "Only the useful signal."} description={lang === "zh" ? "标题、摘要和来源链接，不复制全文，也不把评论冒充事实。" : "Headlines, concise summaries and source links—no copied articles and no opinion presented as fact."} href={`/${lang}/news`} linkLabel={copy[lang].viewAll} />
         <div className="card-grid three-col">{news.slice(0, 3).map((item, index) => <NewsCard key={item.id} item={item} locale={lang} featured={index === 0} />)}</div>
       </section>
-    </main>
+      </main>
+    </HomeScrollAnimations>
   );
 }
