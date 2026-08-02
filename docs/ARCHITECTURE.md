@@ -23,7 +23,7 @@ UI 代码只使用经过标准化的领域模型。外部接口响应格式和�
 
 ## 账户认证
 
-账户使用 Supabase Auth 和 `@supabase/ssr`：浏览器与服务器共享 cookie 会话，`src/proxy.ts` 在请求期间验证并刷新令牌。注册、登录、邮箱验证、退出和密码重设路由均支持中文与英文。认证配置参阅 `docs/AUTH-SETUP.md`。
+账户使用 Supabase Auth 和 `@supabase/ssr`：浏览器与服务器共享 cookie 会话，`src/middleware.ts` 在请求期间验证并刷新令牌。注册、登录、邮箱验证、退出和密码重设路由均支持中文与英文。认证配置参阅 `docs/AUTH-SETUP.md`。
 
 `public.profiles` 与 `public.favorites` 通过迁移文件建立，并启用按 `auth.uid()` 隔离的 RLS。新 Auth 用户由数据库触发器自动获得 profile，已有用户在迁移时补建。
 
