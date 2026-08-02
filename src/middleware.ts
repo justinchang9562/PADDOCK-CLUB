@@ -2,6 +2,19 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  const forwardedProtocol = request.headers.get("x-forwarded-proto");
+  const cloudflareVisitor = request.headers.get("cf-visitor");
+  const arrivedOverHttp =
+    forwardedProtocol === "http" ||
+    cloudflareVisitor?.includes('"scheme":"http"') ||
+    request.nextUrl.protocol === "http:";
+
+  if (arrivedOverHttp) {
+    const secureUrl = request.nextUrl.clone();
+    secureUrl.protocol = "https:";
+    return NextResponse.redirect(secureUrl, 308);
+  }
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !publishableKey) return NextResponse.next({ request });
