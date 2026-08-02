@@ -20,7 +20,7 @@ export type LivePayload = {
   };
   positions: LivePosition[];
   fetchedAt: string;
-  source: "OpenF1" | "PADDOCK CLUB";
+  source: "OpenF1" | "PADDOCK INDEX";
   message?: string;
 };
 
@@ -128,7 +128,7 @@ export async function getLivePayload(): Promise<LivePayload> {
       mode: "unavailable",
       positions: [],
       fetchedAt,
-      source: "PADDOCK CLUB",
+      source: "PADDOCK INDEX",
       message: error instanceof Error ? error.message : "Live provider unavailable",
     };
   }

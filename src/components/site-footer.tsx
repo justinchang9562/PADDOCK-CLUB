@@ -32,7 +32,7 @@ export function SiteFooter({ locale }: { locale: Locale }) {
         </div>
       </div>
       <div className="footer-legal">
-        <span>© {year} PADDOCK CLUB</span>
+        <span>© {year} PADDOCK INDEX</span>
         <span>{locale === "zh" ? "非官方项目，与 Formula 1、FIA 或车队无隶属关系。" : "An independent project, not affiliated with Formula 1, the FIA or any team."}</span>
       </div>
     </footer>

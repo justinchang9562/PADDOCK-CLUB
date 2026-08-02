@@ -5,7 +5,15 @@ import "./globals.css";
 const themeInitializer = `
 (() => {
   try {
-    const saved = localStorage.getItem("paddock-club-theme");
+    const storageKey = "paddock-index-theme";
+    const legacyStorageKey = "paddock-club-theme";
+    const current = localStorage.getItem(storageKey);
+    const legacy = current === null ? localStorage.getItem(legacyStorageKey) : null;
+    const saved = current ?? legacy;
+    if (legacy !== null) {
+      localStorage.setItem(storageKey, legacy);
+      localStorage.removeItem(legacyStorageKey);
+    }
     const preference = saved === "light" || saved === "dark" || saved === "system" ? saved : "system";
     const resolved = preference === "system"
       ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
@@ -23,10 +31,10 @@ const themeInitializer = `
 `;
 
 export const metadata: Metadata = {
-  title: { default: "PADDOCK CLUB — F1 Data & Reference", template: "%s — PADDOCK CLUB" },
+  title: { default: "PADDOCK INDEX — F1 Data & Reference", template: "%s — PADDOCK INDEX" },
   description: "A bilingual Formula 1 season, race, driver, team, car and circuit reference platform.",
-  applicationName: "PADDOCK CLUB",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "PADDOCK CLUB" },
+  applicationName: "PADDOCK INDEX",
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "PADDOCK INDEX" },
 };
 
 export const viewport: Viewport = {

@@ -19,7 +19,7 @@ type ThemeContextValue = {
   setTheme: (theme: ThemePreference) => void;
 };
 
-const STORAGE_KEY = "paddock-club-theme";
+const STORAGE_KEY = "paddock-index-theme";
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function isThemePreference(value: string | null | undefined): value is ThemePreference {

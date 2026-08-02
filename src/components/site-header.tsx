@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AVAILABLE_SEASONS, CURRENT_SEASON } from "@/lib/catalog";
 import { copy, localizedPath } from "@/lib/i18n";
 import type { Locale } from "@/lib/types";
+import { AuthControls } from "./auth-controls";
 import { Icon, type IconName } from "./icons";
 import { Logo } from "./logo";
 import { SearchDialog } from "./search-dialog";
@@ -20,7 +21,12 @@ const nav: Array<{ key: keyof (typeof copy)["en"]["nav"]; path: string; icon: Ic
   { key: "cars", path: "/cars", icon: "car" },
 ];
 
-export function SiteHeader({ locale }: { locale: Locale }) {
+type HeaderIdentity = {
+  displayName: string | null;
+  avatarUrl: string | null;
+} | null;
+
+export function SiteHeader({ locale, signedIn, identity }: { locale: Locale; signedIn: boolean; identity: HeaderIdentity }) {
   const pathname = usePathname();
   const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -123,6 +129,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
             </button>
             <Link className="header-icon-link" href={`/${locale}/live`} aria-label={copy[locale].nav.live} title={copy[locale].nav.live}><Icon name="live"/><i /></Link>
             <Link className="header-icon-link" href={`/${locale}/favorites`} aria-label={copy[locale].nav.favorites} title={copy[locale].nav.favorites}><Icon name="bookmark"/></Link>
+            <AuthControls locale={locale} signedIn={signedIn} identity={identity} />
             <ThemeSwitcher locale={locale} />
             <button className="icon-button language-button" type="button" onClick={switchLocale} aria-label={copy[locale].changeLanguage} title={copy[locale].changeLanguage}>
               <Icon name="globe" />

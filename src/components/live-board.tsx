@@ -14,7 +14,7 @@ export function LiveBoard({ locale }: { locale: Locale }) {
       const response = await fetch("/api/live", { cache: "no-store" });
       setPayload(await response.json() as LivePayload);
     } catch {
-      setPayload({ mode: "unavailable", positions: [], fetchedAt: new Date().toISOString(), source: "PADDOCK CLUB", message: "Request failed" });
+      setPayload({ mode: "unavailable", positions: [], fetchedAt: new Date().toISOString(), source: "PADDOCK INDEX", message: "Request failed" });
     } finally {
       setLoading(false);
     }

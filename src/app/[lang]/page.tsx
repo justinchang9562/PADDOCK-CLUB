@@ -37,8 +37,8 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           <span>ZH · EN</span>
         </div>
 
-        <h1 className="home-index-wordmark" aria-label="PADDOCK CLUB">
-          <span>PADDOCK</span><span>CLUB</span>
+        <h1 className="home-index-wordmark" aria-label="PADDOCK INDEX">
+          <span>PADDOCK</span><span>INDEX</span>
         </h1>
 
         <div className="home-index-visual">

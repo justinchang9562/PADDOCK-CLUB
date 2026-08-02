@@ -1,20 +1,22 @@
 # 部署准备说明
 
-PADDOCK CLUB 已具备标准 Next.js Node 环境的部署条件。本工作区不会自动执行生产环境发布。
+PADDOCK INDEX 使用 OpenNext 部署到 Cloudflare Workers，GitHub `main` 是正式源码分支。
 
-## 推荐流程
+## 正式发布流程
 
-1. 以 `paddock-club-next` 为根目录创建新的 Git 仓库。
-2. 将 `main` 分支推送到 GitHub。项目内置的工作流会在推送和拉取请求时执行代码规范检查、类型检查和生产构建。
-3. 将仓库导入 Vercel，并保留系统自动识别的 Next.js 默认配置。
-4. 只有启用对应数据供应商时，才添加 `.env.example` 中的可选变量。
-5. 绑定自定义域名前，验证 `/zh`、`/en`、`/api/live`、搜索、收藏以及至少一场历史比赛。
+1. 将通过 `npm run check` 的变更提交并推送到 GitHub `main`。
+2. 在 Cloudflare Workers 中配置以下变量（本地 `.dev.vars` 不会自动上传）：
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+3. 使用 `npm run deploy` 发布 `paddock-index` Worker；再在 Cloudflare 绑定正式域名。
+4. 在 Supabase Authentication → URL Configuration 中加入正式域名及其回调路径，例如 `https://你的域名/**`。
+5. 发布后验证 `/zh`、`/en`、`/zh/account`、注册验证邮件、密码重设、跨设备收藏与 `/api/live`。
 
 ## 运行环境要求
 
 - Node.js 20.9 或更高版本；CI 使用 Node.js 24。
-- 当前版本不需要数据库。
-- 收藏内容保存在访问者的浏览器中，不会在不同设备之间同步。
+- 认证、个人资料、头像与跨设备收藏由 Supabase Auth、Postgres 和 Storage 提供；生产环境必须配置上述两个 Supabase 公开变量。
+- `profiles`、`favorites` 与 `avatars` 的 RLS 迁移必须已在 Supabase 项目中执行。
 - 历史与实时数据依赖上游服务。即使这些服务失败，人工整理的当前赛季页面仍能正常渲染。
 
 ## 上线前仍需决定

@@ -53,6 +53,9 @@ export const copy = {
     liveUnavailable: "当前没有可公开读取的实时赛道会话。",
     offlineReady: "基础百科内容仍可正常浏览。",
     localOnly: "仅保存在此设备",
+    signIn: "登录",
+    signOut: "退出登录",
+    account: "账户",
   },
   en: {
     brandTagline: "F1 data and reference",
@@ -96,6 +99,9 @@ export const copy = {
     liveUnavailable: "There is no publicly readable live track session right now.",
     offlineReady: "Core encyclopedia content remains available.",
     localOnly: "Stored on this device",
+    signIn: "Sign in",
+    signOut: "Sign out",
+    account: "Account",
   },
 } as const;
 

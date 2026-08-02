@@ -1,54 +1,263 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import type { FavoriteEntityType } from "@/lib/supabase/database.types";
 
-const STORAGE_KEY = "paddock-club:favorites:v1";
+const STORAGE_KEY = "paddock-index:favorites:v1";
+const LEGACY_STORAGE_KEY = "paddock-club:favorites:v1";
+const ENTITY_TYPES = new Set<FavoriteEntityType>(["driver", "team", "circuit", "car", "race"]);
+
+type SyncState = "local" | "syncing" | "synced" | "error";
+
+type ParsedFavorite = {
+  entityType: FavoriteEntityType;
+  entityId: string;
+  key: string;
+};
 
 type FavoriteContextValue = {
   favorites: string[];
   ready: boolean;
+  mode: "local" | "cloud";
+  syncState: SyncState;
   has: (key: string) => boolean;
+  pending: (key: string) => boolean;
   toggle: (key: string) => void;
 };
 
 const FavoriteContext = createContext<FavoriteContextValue | null>(null);
 
-export function FavoritesProvider({ children }: { children: React.ReactNode }) {
+function parseFavoriteKey(key: string): ParsedFavorite | null {
+  const separator = key.indexOf(":");
+  if (separator < 1) return null;
+
+  const entityType = key.slice(0, separator) as FavoriteEntityType;
+  const entityId = key.slice(separator + 1).trim();
+  if (!ENTITY_TYPES.has(entityType) || !entityId || entityId.length > 160) return null;
+
+  return { entityType, entityId, key: `${entityType}:${entityId}` };
+}
+
+function validFavorites(value: unknown) {
+  if (!Array.isArray(value)) return [];
+  return Array.from(new Set(value
+    .filter((item): item is string => typeof item === "string")
+    .map(parseFavoriteKey)
+    .filter((item): item is ParsedFavorite => Boolean(item))
+    .map((item) => item.key)));
+}
+
+function readLocalFavorites() {
+  try {
+    const current = window.localStorage.getItem(STORAGE_KEY);
+    const legacy = current === null ? window.localStorage.getItem(LEGACY_STORAGE_KEY) : null;
+    const saved = current ?? legacy;
+    const favorites = saved ? validFavorites(JSON.parse(saved)) : [];
+
+    if (legacy !== null) {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+      window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+    }
+
+    return favorites;
+  } catch {
+    return [];
+  }
+}
+
+function writeLocalFavorites(favorites: string[]) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
+  } catch {
+    // Local storage can be disabled. In-memory favorites still work for this session.
+  }
+}
+
+function clearMigratedLocalFavorites() {
+  try {
+    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(LEGACY_STORAGE_KEY);
+  } catch {
+    // A successful cloud copy is authoritative even if local cleanup is unavailable.
+  }
+}
+
+export function FavoritesProvider({ children, userId }: { children: React.ReactNode; userId: string | null }) {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
+  const [syncState, setSyncState] = useState<SyncState>(userId ? "syncing" : "local");
+  const [pendingKeys, setPendingKeys] = useState<string[]>([]);
+  const favoritesRef = useRef<string[]>([]);
+  const pendingKeysRef = useRef(new Set<string>());
+  const supabase = useMemo(() => userId ? createClient() : null, [userId]);
+
+  const replaceFavorites = useCallback((next: string[]) => {
+    const normalized = validFavorites(next);
+    favoritesRef.current = normalized;
+    setFavorites(normalized);
+  }, []);
+
+  const loadCloudFavorites = useCallback(async () => {
+    if (!supabase || !userId || pendingKeysRef.current.size) return;
+    setSyncState("syncing");
+    const { data, error } = await supabase
+      .from("favorites")
+      .select("entity_type, entity_id")
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      setSyncState("error");
+      return;
+    }
+
+    replaceFavorites(data.map((item) => `${item.entity_type}:${item.entity_id}`));
+    setSyncState("synced");
+  }, [replaceFavorites, supabase, userId]);
 
   useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      try {
-        const saved = window.localStorage.getItem(STORAGE_KEY);
-        if (saved) setFavorites(JSON.parse(saved) as string[]);
-      } catch {
-        // Local storage can be disabled. The UI still works for the current session.
-      } finally {
-        setReady(true);
+    let cancelled = false;
+
+    const initialize = async () => {
+      setReady(false);
+      const localFavorites = readLocalFavorites();
+
+      if (!supabase || !userId) {
+        if (!cancelled) {
+          replaceFavorites(localFavorites);
+          setSyncState("local");
+          setReady(true);
+        }
+        return;
       }
-    });
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
+
+      setSyncState("syncing");
+      const localRows = localFavorites
+        .map(parseFavoriteKey)
+        .filter((item): item is ParsedFavorite => Boolean(item))
+        .map((item) => ({
+          user_id: userId,
+          entity_type: item.entityType,
+          entity_id: item.entityId,
+        }));
+
+      let migrationFailed = false;
+      if (localRows.length) {
+        const { error } = await supabase
+          .from("favorites")
+          .upsert(localRows, {
+            onConflict: "user_id,entity_type,entity_id",
+            ignoreDuplicates: true,
+          });
+        migrationFailed = Boolean(error);
+      }
+
+      const { data, error } = await supabase
+        .from("favorites")
+        .select("entity_type, entity_id")
+        .order("created_at", { ascending: true });
+
+      if (cancelled) return;
+      if (error) {
+        replaceFavorites(localFavorites);
+        setSyncState("error");
+        setReady(true);
+        return;
+      }
+
+      const cloudFavorites = data.map((item) => `${item.entity_type}:${item.entity_id}`);
+      replaceFavorites(migrationFailed ? [...cloudFavorites, ...localFavorites] : cloudFavorites);
+      if (migrationFailed) {
+        setSyncState("error");
+      } else {
+        clearMigratedLocalFavorites();
+        setSyncState("synced");
+      }
+      setReady(true);
+    };
+
+    void initialize();
+    return () => {
+      cancelled = true;
+    };
+  }, [replaceFavorites, supabase, userId]);
+
+  useEffect(() => {
+    if (!supabase || !userId) return;
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") void loadCloudFavorites();
+    };
+    window.addEventListener("focus", refreshWhenVisible);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => {
+      window.removeEventListener("focus", refreshWhenVisible);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
+  }, [loadCloudFavorites, supabase, userId]);
 
   const toggle = useCallback((key: string) => {
-    setFavorites((current) => {
-      const next = current.includes(key) ? current.filter((item) => item !== key) : [...current, key];
-      try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      } catch {
-        // Ignore storage failures and preserve in-memory behavior.
+    const parsed = parseFavoriteKey(key);
+    if (!parsed || !ready || pendingKeysRef.current.has(parsed.key)) return;
+
+    const wasActive = favoritesRef.current.includes(parsed.key);
+    const next = wasActive
+      ? favoritesRef.current.filter((item) => item !== parsed.key)
+      : [...favoritesRef.current, parsed.key];
+    replaceFavorites(next);
+
+    if (!supabase || !userId) {
+      writeLocalFavorites(next);
+      return;
+    }
+
+    pendingKeysRef.current.add(parsed.key);
+    setPendingKeys(Array.from(pendingKeysRef.current));
+    void (async () => {
+      const result = wasActive
+        ? await supabase
+          .from("favorites")
+          .delete()
+          .eq("user_id", userId)
+          .eq("entity_type", parsed.entityType)
+          .eq("entity_id", parsed.entityId)
+        : await supabase
+          .from("favorites")
+          .upsert({
+            user_id: userId,
+            entity_type: parsed.entityType,
+            entity_id: parsed.entityId,
+          }, {
+            onConflict: "user_id,entity_type,entity_id",
+            ignoreDuplicates: true,
+          });
+
+      if (result.error) {
+        setFavorites((current) => {
+          const rollback = wasActive
+            ? Array.from(new Set([...current, parsed.key]))
+            : current.filter((item) => item !== parsed.key);
+          favoritesRef.current = rollback;
+          return rollback;
+        });
+        setSyncState("error");
+      } else {
+        setSyncState("synced");
       }
-      return next;
-    });
-  }, []);
+
+      pendingKeysRef.current.delete(parsed.key);
+      setPendingKeys(Array.from(pendingKeysRef.current));
+    })();
+  }, [ready, replaceFavorites, supabase, userId]);
 
   const value = useMemo<FavoriteContextValue>(() => ({
     favorites,
     ready,
+    mode: userId ? "cloud" : "local",
+    syncState,
     has: (key) => favorites.includes(key),
+    pending: (key) => pendingKeys.includes(key),
     toggle,
-  }), [favorites, ready, toggle]);
+  }), [favorites, pendingKeys, ready, syncState, toggle, userId]);
 
   return <FavoriteContext.Provider value={value}>{children}</FavoriteContext.Provider>;
 }

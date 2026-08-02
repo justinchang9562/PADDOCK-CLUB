@@ -8,6 +8,8 @@ export type IconName =
   | "check"
   | "chevron"
   | "close"
+  | "eye"
+  | "eyeOff"
   | "flag"
   | "globe"
   | "grid"
@@ -22,7 +24,8 @@ export type IconName =
   | "spark"
   | "sun"
   | "team"
-  | "track";
+  | "track"
+  | "user";
 
 type IconProps = SVGProps<SVGSVGElement> & { name: IconName; filled?: boolean };
 
@@ -34,6 +37,8 @@ const paths: Record<IconName, React.ReactNode> = {
   check: <path d="m5 12 4.2 4.2L19 6.5"/>,
   chevron: <path d="m9 18 6-6-6-6"/>,
   close: <path d="m6 6 12 12M18 6 6 18"/>,
+  eye: <><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6S2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.6"/></>,
+  eyeOff: <><path d="m3 3 18 18"/><path d="M10.5 6.2A10.4 10.4 0 0 1 12 6c6 0 9.5 6 9.5 6a16.8 16.8 0 0 1-2.1 2.8M6.4 6.4C3.9 8 2.5 12 2.5 12s3.5 6 9.5 6a9.8 9.8 0 0 0 3.1-.5"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></>,
   flag: <><path d="M5 21V4"/><path d="M5 5h11l-2 3 2 3H5"/></>,
   globe: <><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></>,
   grid: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
@@ -49,6 +54,7 @@ const paths: Record<IconName, React.ReactNode> = {
   sun: <><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></>,
   team: <><circle cx="8" cy="9" r="3"/><circle cx="17" cy="8" r="2.5"/><path d="M3 20v-1.5A4.5 4.5 0 0 1 7.5 14h1A4.5 4.5 0 0 1 13 18.5V20M14 14h2.7a4.3 4.3 0 0 1 4.3 4.3V20"/></>,
   track: <><path d="M5.4 19.5c-2.8-2.5-2.7-6.8.2-9.2l4.6-3.8c2.1-1.8 5.3-1.5 7.1.7 1.9 2.3 1.4 5.8-1.1 7.5l-3.1 2.1c-1.1.7-2.5.4-3.2-.6-.8-1.1-.5-2.6.6-3.4l2.5-1.7"/><path d="M6 20h12"/></>,
+  user: <><circle cx="12" cy="8" r="3.5"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></>,
 };
 
 export function Icon({ name, filled = false, ...props }: IconProps) {

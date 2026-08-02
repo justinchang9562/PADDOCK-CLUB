@@ -15,7 +15,7 @@
 | `audi-r26.jpg` | 2026 Audi R26 | Yu Chu Chin | CC BY-SA 4.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Audi_R26_of_Gabriel_Bortoleto_(028A8492).jpg) |
 | `aston-martin-amr26.jpg` | 2026 Aston Martin AMR26 | Liauzh | CC BY 4.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:2026_Chinese_GP_-_Aston_Martin_-_AMR26.jpg) |
 | `cadillac-mac26.jpg` | 2026 Cadillac MAC-26 | Yu Chu Chin | CC BY-SA 4.0 | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Cadillac_MAC-26_of_Sergio_P%C3%A9rez_(028A8062).jpg) |
-部分文件是 Wikimedia Commons 已发布的裁剪版本。PADDOCK CLUB 会通过 Next.js 对图片进行响应式压缩和画面适配，但不会改变图片的纪实含义。
+部分文件是 Wikimedia Commons 已发布的裁剪版本。PADDOCK INDEX 会通过 Next.js 对图片进行响应式压缩和画面适配，但不会改变图片的纪实含义。
 
 旧版 `silverstone.jpg` 仍保留在 `public/images` 便于回退，但已不再由页面或 `src/lib/media.ts` 引用。
 

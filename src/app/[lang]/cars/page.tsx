@@ -31,7 +31,7 @@ export default async function CarsPage({ params }: PageProps<"/[lang]/cars">) {
       <section className="page-section">
         <div className="disclosure-panel">
           <div><span className="eyebrow">{lang === "zh" ? "数据边界" : "Data boundary"}</span><h2>{lang === "zh" ? "“未知”也是一种准确" : "Unknown can be accurate"}</h2></div>
-          <p>{lang === "zh" ? "F1 车队不会公开完整的空气动力图谱、真实峰值输出、单站设定或私有遥测。PADDOCK CLUB 会区分规则上限、车队公开信息与未公开数据。" : "F1 teams do not publish complete aero maps, true peak output, race setup sheets or private telemetry. PADDOCK CLUB separates regulatory limits, team disclosures and unavailable data."}</p>
+          <p>{lang === "zh" ? "F1 车队不会公开完整的空气动力图谱、真实峰值输出、单站设定或私有遥测。PADDOCK INDEX 会区分规则上限、车队公开信息与未公开数据。" : "F1 teams do not publish complete aero maps, true peak output, race setup sheets or private telemetry. PADDOCK INDEX separates regulatory limits, team disclosures and unavailable data."}</p>
           <a className="secondary-button" href="https://www.fia.com/F126" target="_blank" rel="noreferrer">FIA 2026 Regulations</a>
         </div>
       </section>

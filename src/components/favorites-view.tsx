@@ -19,12 +19,21 @@ function keyFor(item: SearchEntity) {
 }
 
 export function FavoritesView({ locale }: { locale: Locale }) {
-  const { favorites, ready } = useFavorites();
+  const { favorites, mode, ready, syncState } = useFavorites();
   const index = buildSearchIndex(locale);
   const items = favorites.map((key) => index.find((item) => keyFor(item) === key)).filter((item): item is SearchEntity => Boolean(item));
 
   if (!ready) return <div className="loading-card skeleton"/>;
-  if (!items.length) return <div className="empty-state favorites-empty"><Icon name="bookmark"/><strong>{locale === "zh" ? "还没有收藏内容" : "No favorites yet"}</strong><span>{locale === "zh" ? "浏览车手、车队、赛车、赛道或比赛，在详情页点击收藏。内容只保存在这台设备的浏览器中。" : "Browse a driver, team, car, circuit or race and save it from the detail page. Items stay in this browser on this device."}</span><Link className="primary-button" href={`/${locale}`}>{locale === "zh" ? "开始浏览" : "Start exploring"}</Link></div>;
+  const status = syncState === "error"
+    ? (locale === "zh" ? "云端同步暂时失败；本机收藏仍被保留，稍后会自动重试。" : "Cloud sync is temporarily unavailable. Local favorites are preserved and will retry later.")
+    : mode === "cloud"
+      ? (syncState === "syncing"
+        ? (locale === "zh" ? "正在同步账户收藏…" : "Syncing account favorites…")
+        : (locale === "zh" ? "已同步到你的 PADDOCK ID；其他设备登录后会显示相同收藏。" : "Synced to your PADDOCK ID. The same favorites appear when you sign in on another device."))
+      : (locale === "zh" ? "访客收藏仅保存在此浏览器；登录后会自动合并到你的账户。" : "Guest favorites stay in this browser and merge into your account after sign-in.");
+  const statusNode = <p className={`favorites-sync-note ${syncState === "error" ? "is-error" : ""}`} role={syncState === "error" ? "alert" : "status"}>{status}</p>;
 
-  return <div className="favorites-list">{items.map((item) => { const itemKey = keyFor(item); return <article key={itemKey}><Link href={item.href}><span className="favorite-type"><Icon name={typeIcons[item.type]}/>{labels[locale][item.type]}</span><span><strong>{item.title}</strong><small>{item.subtitle}</small></span><Icon name="arrow"/></Link><FavoriteButton itemKey={itemKey} locale={locale} compact/></article>; })}</div>;
+  if (!items.length) return <>{statusNode}<div className="empty-state favorites-empty"><Icon name="bookmark"/><strong>{locale === "zh" ? "还没有收藏内容" : "No favorites yet"}</strong><span>{locale === "zh" ? "浏览车手、车队、赛车、赛道或比赛，然后点击收藏。" : "Browse a driver, team, car, circuit or race, then add it to favorites."}</span><Link className="primary-button" href={`/${locale}`}>{locale === "zh" ? "开始浏览" : "Start exploring"}</Link></div></>;
+
+  return <>{statusNode}<div className="favorites-list">{items.map((item) => { const itemKey = keyFor(item); return <article key={itemKey}><Link href={item.href}><span className="favorite-type"><Icon name={typeIcons[item.type]}/>{labels[locale][item.type]}</span><span><strong>{item.title}</strong><small>{item.subtitle}</small></span><Icon name="arrow"/></Link><FavoriteButton itemKey={itemKey} locale={locale} compact/></article>; })}</div></>;
 }

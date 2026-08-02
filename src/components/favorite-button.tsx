@@ -6,8 +6,9 @@ import { useFavorites } from "./favorites-provider";
 import { Icon } from "./icons";
 
 export function FavoriteButton({ itemKey, locale, compact = false }: { itemKey: string; locale: Locale; compact?: boolean }) {
-  const { has, toggle, ready } = useFavorites();
+  const { has, pending, toggle, ready } = useFavorites();
   const active = has(itemKey);
+  const isPending = pending(itemKey);
   const label = active ? copy[locale].removeFavorite : copy[locale].addFavorite;
 
   return (
@@ -18,7 +19,8 @@ export function FavoriteButton({ itemKey, locale, compact = false }: { itemKey: 
       aria-pressed={active}
       aria-label={label}
       title={label}
-      disabled={!ready}
+      disabled={!ready || isPending}
+      aria-busy={isPending}
     >
       <Icon name="bookmark" filled={active} />
       {!compact && <span>{label}</span>}

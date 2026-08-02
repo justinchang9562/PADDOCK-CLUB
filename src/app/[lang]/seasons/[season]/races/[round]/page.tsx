@@ -34,7 +34,7 @@ export default async function RacePage({ params }: PageProps<"/[lang]/seasons/[s
   return (
     <main className="page-main">
       <nav className="breadcrumbs" aria-label="Breadcrumb">
-        <Link href={`/${lang}`}>PADDOCK CLUB</Link><Icon name="chevron" />
+        <Link href={`/${lang}`}>PADDOCK INDEX</Link><Icon name="chevron" />
         <Link href={`/${lang}/seasons/${season}`}>{season}</Link><Icon name="chevron" />
         <span>R{round}</span>
       </nav>
@@ -74,7 +74,7 @@ export default async function RacePage({ params }: PageProps<"/[lang]/seasons/[s
           <aside className="surface-panel weekend-panel">
             <span className="eyebrow">{lang === "zh" ? "周末状态" : "Weekend status"}</span>
             <h2>{race.status === "completed" ? (lang === "zh" ? "正式结果已发布" : "Official result published") : race.status === "live" ? (lang === "zh" ? "赛道会话进行中" : "Track sessions in progress") : (lang === "zh" ? "等待比赛周末" : "Awaiting race weekend")}</h2>
-            <p>{race.status === "completed" ? (lang === "zh" ? "下方分类优先读取完整历史结果；上游中断时显示本地核验的前三名。" : "The classification below prioritizes the complete historical result and falls back to a verified podium if the provider is interrupted.") : (lang === "zh" ? "精确会话时间和实时位置需以官方计时为准。PADDOCK CLUB 不会用估算值冒充现场数据。" : "Exact session times and live positions remain subject to official timing. PADDOCK CLUB never presents estimates as live data.")}</p>
+            <p>{race.status === "completed" ? (lang === "zh" ? "下方分类优先读取完整历史结果；上游中断时显示本地核验的前三名。" : "The classification below prioritizes the complete historical result and falls back to a verified podium if the provider is interrupted.") : (lang === "zh" ? "精确会话时间和实时位置需以官方计时为准。PADDOCK INDEX 不会用估算值冒充现场数据。" : "Exact session times and live positions remain subject to official timing. PADDOCK INDEX never presents estimates as live data.")}</p>
             {race.status !== "completed" && <Link className="primary-button" href={`/${lang}/live`}><Icon name="live"/>{lang === "zh" ? "前往实时中心" : "Open live center"}</Link>}
           </aside>
         </div>

@@ -10,7 +10,7 @@ cd "$PROJECT_DIR" || exit 1
 clear
 
 echo "========================================"
-echo "       PADDOCK CLUB 本地启动工具"
+echo "       PADDOCK INDEX 本地启动工具"
 echo "========================================"
 echo
 
@@ -27,7 +27,7 @@ echo "npm：$(npm --version)"
 echo
 
 if curl --silent --fail --max-time 2 "$SITE_URL" >/dev/null 2>&1; then
-  echo "PADDOCK CLUB 已经在运行，正在打开浏览器……"
+  echo "PADDOCK INDEX 已经在运行，正在打开浏览器……"
   open "$SITE_URL"
   echo
   read "?按回车键关闭窗口……"
@@ -51,7 +51,7 @@ if [[ ! -d "node_modules" ]]; then
   echo
 fi
 
-echo "正在启动 PADDOCK CLUB……"
+echo "正在启动 PADDOCK INDEX……"
 echo "网站地址：$SITE_URL"
 echo "关闭此终端窗口或按 Control + C 即可停止网站。"
 echo
@@ -71,9 +71,9 @@ EXIT_CODE=$?
 
 echo
 if [[ $EXIT_CODE -eq 0 ]]; then
-  echo "PADDOCK CLUB 已停止运行。"
+  echo "PADDOCK INDEX 已停止运行。"
 else
-  echo "PADDOCK CLUB 启动失败，退出代码：$EXIT_CODE"
+  echo "PADDOCK INDEX 启动失败，退出代码：$EXIT_CODE"
   echo "请查看上方终端信息定位原因。"
 fi
 echo
