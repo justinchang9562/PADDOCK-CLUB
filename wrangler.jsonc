@@ -2,9 +2,28 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "paddock-index",
   "main": ".open-next/worker.js",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "paddockindex.eu.cc",
+      "custom_domain": true
+    }
+  ],
   "compatibility_date": "2026-07-18",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "keep_vars": true,
+  "vars": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://jljkjpefatevmvhbilxx.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_QeTol8wH3Bo4lLG2gt6Gng_5TfX1Iak"
+  },
+  "secrets": {
+    "required": [
+      "SUPABASE_SERVICE_ROLE_KEY",
+      "PADDOCK_SITE_URL",
+      "PADDOCK_LEGAL_CONTACT_EMAIL"
+    ]
+  },
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
