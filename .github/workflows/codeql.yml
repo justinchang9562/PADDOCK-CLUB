@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: 检出代码仓库
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: 初始化 CodeQL
         uses: github/codeql-action/init@c3400c2f38909e0dcf3c3a41f2030a8217be5d3e # v3
         with:
