@@ -47,7 +47,7 @@ export default async function RacePage({ params }: PageProps<"/[lang]/seasons/[s
           <p>{circuit ? `${circuit.city[lang]} · ${circuit.name}` : race.circuitId}</p>
           <div className="race-detail-date">{formatDateRange(race.startDate, race.endDate, lang)}</div>
           <div className="hero-actions">
-            <FavoriteButton itemKey={`race:${season}:${round}`} locale={lang}/>
+            <FavoriteButton itemKey={`race:${race.id}`} locale={lang}/>
             <a className="secondary-button" href={season === 2026 ? "https://www.formula1.com/en/racing/2026" : `https://www.formula1.com/en/results/${season}/races`} target="_blank" rel="noreferrer">{lang === "zh" ? "官方赛事页面" : "Official event page"}<Icon name="arrow"/></a>
           </div>
         </div>
@@ -73,7 +73,7 @@ export default async function RacePage({ params }: PageProps<"/[lang]/seasons/[s
 
           <aside className="surface-panel weekend-panel">
             <span className="eyebrow">{lang === "zh" ? "周末状态" : "Weekend status"}</span>
-            <h2>{race.status === "completed" ? (lang === "zh" ? "正式结果已发布" : "Official result published") : race.status === "live" ? (lang === "zh" ? "赛道会话进行中" : "Track sessions in progress") : (lang === "zh" ? "等待比赛周末" : "Awaiting race weekend")}</h2>
+            <h2>{race.status === "completed" ? (lang === "zh" ? "正式结果已发布" : "Official result published") : race.status === "live" ? (lang === "zh" ? "赛道会话进行中" : "Track session in progress") : race.status === "weekend" || race.status === "awaiting_result" ? (lang === "zh" ? "比赛周末进行中" : "Race weekend in progress") : (lang === "zh" ? "等待比赛周末" : "Awaiting race weekend")}</h2>
             <p>{race.status === "completed" ? (lang === "zh" ? "下方分类优先读取完整历史结果；上游中断时显示本地核验的前三名。" : "The classification below prioritizes the complete historical result and falls back to a verified podium if the provider is interrupted.") : (lang === "zh" ? "精确会话时间和实时位置需以官方计时为准。PADDOCK INDEX 不会用估算值冒充现场数据。" : "Exact session times and live positions remain subject to official timing. PADDOCK INDEX never presents estimates as live data.")}</p>
             {race.status !== "completed" && <Link className="primary-button" href={`/${lang}/live`}><Icon name="live"/>{lang === "zh" ? "前往实时中心" : "Open live center"}</Link>}
           </aside>
@@ -83,8 +83,8 @@ export default async function RacePage({ params }: PageProps<"/[lang]/seasons/[s
       <section className="page-section">
         <SectionHeading
           eyebrow={lang === "zh" ? "比赛分类" : "Race classification"}
-          title={classification?.data.length ? (lang === "zh" ? "每一位完赛车手。" : "Every classified driver.") : (lang === "zh" ? "结果尚未产生。" : "No result yet.")}
-          description={lang === "zh" ? "位置、车队、圈数、时间差和完赛状态。" : "Position, constructor, laps, gap and finishing status."}
+          title={classification?.data.length ? classification.completeness === "podium_only" ? (lang === "zh" ? "本地核验三甲快照。" : "Verified podium snapshot.") : (lang === "zh" ? "完整正式分类。" : "Full official classification.") : (lang === "zh" ? "结果尚未产生。" : "No result yet.")}
+          description={classification?.completeness === "podium_only" ? (lang === "zh" ? "上游暂不可用；这里只显示最后核验的前三名，不代表完整分类。" : "The upstream source is unavailable; this verified top-three snapshot is not a full classification.") : (lang === "zh" ? "位置、车队、圈数、时间差和完赛状态。" : "Position, constructor, laps, gap and finishing status.")}
         />
         {classification?.data.length ? <><ClassificationTable rows={classification.data} locale={lang}/><DataSourceNote result={classification} locale={lang}/></> : (
           <div className="empty-state"><strong>{lang === "zh" ? "绿灯之后，结果会出现在这里" : "Results will appear here after lights out"}</strong><span>{lang === "zh" ? "比赛进行时请使用实时中心；正式分类发布后，此页会显示最终名次和状态。" : "Use the live center during the race. This page shows final positions and status once a classification is published."}</span></div>

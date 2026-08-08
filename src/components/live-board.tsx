@@ -5,6 +5,25 @@ import type { LivePayload } from "@/lib/live";
 import type { Locale } from "@/lib/types";
 import { Icon } from "./icons";
 
+const reasonCopy = {
+  zh: {
+    not_live: "最新会话已经结束或尚未开始。",
+    not_configured: "实时订阅尚未在服务器端配置；赛历与百科数据不受影响。",
+    auth_failed: "实时数据授权暂时失败；我们没有向浏览器暴露任何凭据。",
+    rate_limited: "刷新过于频繁，请稍后再试。",
+    timeout: "实时提供方响应超时，正在保留稳定的降级状态。",
+    upstream_error: "实时提供方暂不可用；赛历与百科数据不受影响。",
+  },
+  en: {
+    not_live: "The latest session has ended or has not started.",
+    not_configured: "The live subscription is not configured on the server. Calendar and reference data remain available.",
+    auth_failed: "Live-data authorization failed. No credentials were exposed to the browser.",
+    rate_limited: "Too many refreshes. Please try again shortly.",
+    timeout: "The live provider timed out; a stable degraded state is being shown.",
+    upstream_error: "The live provider is unavailable. Calendar and reference data remain available.",
+  },
+} as const;
+
 export function LiveBoard({ locale }: { locale: Locale }) {
   const [payload, setPayload] = useState<LivePayload | null>(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +33,7 @@ export function LiveBoard({ locale }: { locale: Locale }) {
       const response = await fetch("/api/live", { cache: "no-store" });
       setPayload(await response.json() as LivePayload);
     } catch {
-      setPayload({ mode: "unavailable", positions: [], fetchedAt: new Date().toISOString(), source: "PADDOCK INDEX", message: "Request failed" });
+      setPayload({ mode: "unavailable", positions: [], fetchedAt: new Date().toISOString(), source: "snapshot", stale: true, reason: "upstream_error" });
     } finally {
       setLoading(false);
     }
@@ -46,9 +65,9 @@ export function LiveBoard({ locale }: { locale: Locale }) {
           {payload.positions.map((row) => <div className="live-position" key={row.driverNumber}><strong>{row.position}</strong><span className="live-driver"><i style={{ background: row.teamColor }}/><b>{row.acronym}</b><small>#{row.driverNumber} · {row.name}</small></span><span>{row.teamName}</span><time>{new Date(row.updatedAt).toLocaleTimeString(locale === "zh" ? "zh-CN" : "en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</time></div>)}
         </div>
       ) : (
-        <div className="live-empty"><Icon name="live"/><strong>{locale === "zh" ? "当前没有可显示的实时排名" : "No live positions to display"}</strong><p>{payload?.mode === "schedule" ? (locale === "zh" ? "最新会话已经结束或尚未开始。" : "The latest session has ended or has not started.") : (locale === "zh" ? "OpenF1 可能要求实时授权，或当前不在赛道会话窗口。" : "OpenF1 may require live authorization, or there is no active track session.")}</p></div>
+        <div className="live-empty"><Icon name="live"/><strong>{locale === "zh" ? "当前没有可显示的实时排名" : "No live positions to display"}</strong><p>{payload?.reason ? reasonCopy[locale][payload.reason] : (locale === "zh" ? "当前没有进行中的赛道会话。" : "There is no active track session.")}</p></div>
       )}
-      <footer className="live-board-foot"><span>{locale === "zh" ? "每 15 秒刷新，页面不可见时暂停" : "Refreshes every 15 seconds; pauses when hidden"}</span><span>{payload?.source} · {payload ? new Date(payload.fetchedAt).toLocaleTimeString() : "—"}</span></footer>
+      <footer className="live-board-foot"><span>{locale === "zh" ? "每 15 秒刷新，页面不可见时暂停" : "Refreshes every 15 seconds; pauses when hidden"}</span><span>{payload?.source === "openf1" ? "OpenF1" : "PADDOCK INDEX"}{payload?.stale ? ` · ${locale === "zh" ? "降级数据" : "stale"}` : ""} · {payload ? new Date(payload.fetchedAt).toLocaleTimeString() : "—"}</span></footer>
     </section>
   );
 }

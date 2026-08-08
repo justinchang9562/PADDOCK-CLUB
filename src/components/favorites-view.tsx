@@ -11,10 +11,6 @@ const typeIcons: Record<SearchEntity["type"], IconName> = { driver: "helmet", te
 const labels = { zh: { driver: "车手", team: "车队", circuit: "赛道", car: "赛车", race: "比赛" }, en: { driver: "Driver", team: "Team", circuit: "Circuit", car: "Car", race: "Race" } };
 
 function keyFor(item: SearchEntity) {
-  if (item.type === "race") {
-    const [season, round] = item.id.split("-");
-    return `race:${season}:${round}`;
-  }
   return `${item.type}:${item.id}`;
 }
 

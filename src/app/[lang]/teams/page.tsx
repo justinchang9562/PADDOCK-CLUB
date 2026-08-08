@@ -19,7 +19,7 @@ export default async function TeamsPage({ params }: PageProps<"/[lang]/teams">) 
         <div><span className="eyebrow">2026 CONSTRUCTORS</span><h1>{lang === "zh" ? <>十一种方法，<br/><span>追求同一秒</span></> : <>Eleven ways<br/><span>to find one second</span></>}</h1><p>{lang === "zh" ? "车队不只是一种涂装。这里连接它们的历史、基地、管理、车手、赛车、动力单元与当前积分。" : "A team is more than a livery. Explore history, base, leadership, drivers, car, power unit and current points."}</p></div>
         <div className="constructor-bars" aria-hidden="true">{teams.map((team) => <i key={team.id} style={{ background: team.color, height: `${30 + (12 - team.position) * 7}px` }}/>)}</div>
       </section>
-      <section className="page-section compact"><SectionHeading eyebrow={lang === "zh" ? "车队档案" : "Team files"} title={lang === "zh" ? "2026 完整车队阵容。" : "The complete 2026 field."}/><div className="card-grid two-col">{teams.map((team) => <TeamCard key={team.id} team={team} locale={lang}/>)}</div></section>
+      <section className="page-section compact"><SectionHeading eyebrow={lang === "zh" ? "车队档案" : "Team files"} title={lang === "zh" ? "2026 完整车队阵容。" : "The complete 2026 field."}/><div className="card-grid two-col">{teams.map((team, index) => <TeamCard key={team.id} team={team} locale={lang} priority={index === 0}/>)}</div></section>
       <section className="page-section"><SectionHeading eyebrow={lang === "zh" ? "车队积分" : "Constructors"} title={lang === "zh" ? "制造商积分榜。" : "Constructors' standings."}/><TeamStandingsTable rows={teams} locale={lang}/></section>
     </main>
   );

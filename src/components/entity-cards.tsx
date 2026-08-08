@@ -13,9 +13,7 @@ export function DriverCard({ driver, locale }: { driver: Driver; locale: Locale 
   return (
     <article className="entity-card driver-card" style={{ "--team-color": `var(--team-${driver.teamId}, #7f8792)` } as React.CSSProperties}>
       <div className="entity-media">
-        {driver.image ? <Image className="driver-portrait-image" src={driver.image} alt={`${driver.firstName} ${driver.lastName}, 2026 official portrait`} fill sizes="(max-width: 720px) 90vw, 30vw" /> : (
-          <div className="driver-identity"><strong>{driver.code}</strong><small>{locale === "zh" ? "肖像待授权" : "Portrait pending license"}</small></div>
-        )}
+        <div className="driver-identity"><strong>{driver.code}</strong><small>{locale === "zh" ? "独立资料卡" : "Independent profile"}</small></div>
         <div className="entity-media-number">{driver.number}</div>
         <FavoriteButton itemKey={`driver:${driver.id}`} locale={locale} compact />
       </div>
@@ -29,12 +27,12 @@ export function DriverCard({ driver, locale }: { driver: Driver; locale: Locale 
   );
 }
 
-export function TeamCard({ team, locale }: { team: Team; locale: Locale }) {
+export function TeamCard({ team, locale, priority = false }: { team: Team; locale: Locale; priority?: boolean }) {
   const car = getCar(`${team.id}-2026`);
   return (
     <article className="entity-card team-card" style={{ "--team-color": team.color } as React.CSSProperties}>
       <div className="team-visual">
-        {car?.image ? <Image src={car.image} alt={`${car.chassis} on track`} fill sizes="(max-width: 720px) 90vw, 30vw" /> : <div className="media-unavailable"><strong>{team.shortName}</strong><small>{locale === "zh" ? "图片待授权" : "Image pending license"}</small></div>}
+        {car?.image ? <Image src={car.image} alt={`${car.chassis} on track`} fill priority={priority} sizes="(max-width: 720px) 90vw, 30vw" /> : <div className="media-unavailable"><strong>{team.shortName}</strong><small>{locale === "zh" ? "图片待授权" : "Image pending license"}</small></div>}
         <span className="team-photo-shade" aria-hidden="true" />
         <span className="team-line" aria-hidden="true" />
         <span className="team-monogram" aria-hidden="true">{team.shortName.slice(0, 3).toUpperCase()}</span>
@@ -50,11 +48,11 @@ export function TeamCard({ team, locale }: { team: Team; locale: Locale }) {
   );
 }
 
-export function CarCard({ car, team, locale }: { car: Car; team: Team; locale: Locale }) {
+export function CarCard({ car, team, locale, priority = false }: { car: Car; team: Team; locale: Locale; priority?: boolean }) {
   return (
     <article className="entity-card car-card" style={{ "--team-color": team.color } as React.CSSProperties}>
       <div className="entity-media car-media">
-        {car.image ? <Image src={car.image} alt={`${car.chassis} on track`} fill sizes="(max-width: 720px) 90vw, 45vw" /> : (
+        {car.image ? <Image src={car.image} alt={`${car.chassis} on track`} fill priority={priority} sizes="(max-width: 720px) 90vw, 45vw" /> : (
           <div className="media-unavailable"><strong>{team.shortName}</strong><small>{locale === "zh" ? "图片待授权" : "Image pending license"}</small></div>
         )}
         <span className="season-stamp">{car.season}</span>
@@ -74,10 +72,8 @@ export function CircuitCard({ circuit, locale }: { circuit: Circuit; locale: Loc
   return (
     <article className="entity-card circuit-card">
       <div className="circuit-visual">
-        {circuit.image ? <Image className="circuit-cover-photo" src={circuit.image} alt={`${circuit.name} circuit`} fill sizes="(max-width: 720px) 90vw, 30vw" /> : (
-          <div className="track-glyph" aria-hidden="true"><Icon name="track" /></div>
-        )}
-        <div className="circuit-layout-badge" aria-hidden="true"><Image src={`/images/circuits/layouts/${circuit.id}.png`} alt="" fill sizes="150px" /></div>
+        <div className="track-glyph" aria-hidden="true"><Icon name="track" /></div>
+        <div className="circuit-layout-badge circuit-code-badge" aria-hidden="true"><strong>{circuit.countryCode}</strong><small>TRACK FILE</small></div>
         <span className="flag-code">{circuit.countryCode}</span>
         <FavoriteButton itemKey={`circuit:${circuit.id}`} locale={locale} compact />
       </div>

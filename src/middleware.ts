@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// OpenNext Cloudflare 1.20.x does not yet support Next's Node.js-only proxy.ts.
+// Keep Edge Middleware until that deployment adapter adds Node proxy support.
 export async function middleware(request: NextRequest) {
   const forwardedProtocol = request.headers.get("x-forwarded-proto");
   const cloudflareVisitor = request.headers.get("cf-visitor");
@@ -9,7 +11,8 @@ export async function middleware(request: NextRequest) {
     cloudflareVisitor?.includes('"scheme":"http"') ||
     request.nextUrl.protocol === "http:";
 
-  if (arrivedOverHttp) {
+  const isLocalRequest = request.nextUrl.hostname === "localhost" || request.nextUrl.hostname === "127.0.0.1" || request.nextUrl.hostname === "[::1]";
+  if (process.env.NODE_ENV === "production" && arrivedOverHttp && !isLocalRequest) {
     const secureUrl = request.nextUrl.clone();
     secureUrl.protocol = "https:";
     return NextResponse.redirect(secureUrl, 308);

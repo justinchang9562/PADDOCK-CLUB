@@ -44,13 +44,13 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
         <div className="home-index-visual">
           <Image
             className="home-index-photo"
-            src="/images/home/red-bull-night.jpg"
-            alt={lang === "zh" ? "夜间赛道上高速行驶的红牛 F1 赛车" : "A Red Bull Formula 1 car at speed on a night circuit"}
+            src="/images/red-bull-rb22.jpg"
+            alt={lang === "zh" ? "2026 Red Bull RB22 赛车" : "The 2026 Red Bull RB22 race car"}
             fill
             priority
             sizes="(max-width: 1000px) 100vw, 92vw"
           />
-          <span className="home-index-photo-label">RED BULL · NIGHT RUN</span>
+          <span className="home-index-photo-label">RED BULL · RB22</span>
         </div>
 
         <div className="home-index-stat" aria-label={lang === "zh" ? `${races2026.length} 场比赛周末` : `${races2026.length} race weekends`}>
@@ -131,7 +131,7 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
           </div>
           <div className="explore-links">
             <Link href={`/${lang}/cars`}><Icon name="car"/><span><strong>{copy[lang].nav.cars}</strong><small>{lang === "zh" ? "11 台 2026 赛车" : "11 cars for 2026"}</small></span><Icon name="arrow"/></Link>
-            <Link href={`/${lang}/circuits`}><Icon name="track"/><span><strong>{copy[lang].nav.circuits}</strong><small>{lang === "zh" ? "22 个比赛场地" : "22 race venues"}</small></span><Icon name="arrow"/></Link>
+            <Link href={`/${lang}/circuits`}><Icon name="track"/><span><strong>{copy[lang].nav.circuits}</strong><small>{lang === "zh" ? "23 个比赛场地" : "23 race venues"}</small></span><Icon name="arrow"/></Link>
             <Link href={`/${lang}/teams`}><Icon name="team"/><span><strong>{copy[lang].nav.teams}</strong><small>{lang === "zh" ? "历史与技术档案" : "History and technical files"}</small></span><Icon name="arrow"/></Link>
           </div>
         </div>

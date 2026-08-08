@@ -1,6 +1,8 @@
 import type { Car, Circuit, Driver, NewsItem, Race, Team } from "./types";
+import { raceStatusFor } from "./race-status";
 
 export const CURRENT_SEASON = 2026;
+export const CURRENT_SNAPSHOT_VERIFIED_AT = "2026-08-08T00:00:00Z";
 export const AVAILABLE_SEASONS = Array.from({ length: 77 }, (_, index) => 2026 - index);
 
 export const teams: Team[] = [
@@ -13,7 +15,7 @@ export const teams: Team[] = [
     principal: "Toto Wolff",
     firstEntry: 1954,
     championships: 8,
-    points: 333,
+    points: 379,
     position: 1,
     drivers: ["antonelli", "russell"],
     history: {
@@ -30,7 +32,7 @@ export const teams: Team[] = [
     principal: "Frédéric Vasseur",
     firstEntry: 1950,
     championships: 16,
-    points: 255,
+    points: 307,
     position: 2,
     drivers: ["hamilton", "leclerc"],
     history: {
@@ -47,7 +49,7 @@ export const teams: Team[] = [
     principal: "Andrea Stella",
     firstEntry: 1966,
     championships: 10,
-    points: 179,
+    points: 220,
     position: 3,
     drivers: ["norris", "piastri"],
     history: {
@@ -64,7 +66,7 @@ export const teams: Team[] = [
     principal: "Laurent Mekies",
     firstEntry: 2005,
     championships: 6,
-    points: 128,
+    points: 177,
     position: 4,
     drivers: ["verstappen", "hadjar"],
     history: {
@@ -81,8 +83,8 @@ export const teams: Team[] = [
     principal: "Steve Nielsen",
     firstEntry: 1986,
     championships: 2,
-    points: 60,
-    position: 5,
+    points: 61,
+    position: 6,
     drivers: ["gasly", "colapinto"],
     history: {
       zh: "恩斯通车队经历过贝纳通、雷诺与 Alpine 等身份，并赢得过车手与车队双冠。2026 年开始采用梅赛德斯动力。",
@@ -98,8 +100,8 @@ export const teams: Team[] = [
     principal: "Alan Permane",
     firstEntry: 1985,
     championships: 0,
-    points: 59,
-    position: 6,
+    points: 66,
+    position: 5,
     drivers: ["lawson", "lindblad"],
     history: {
       zh: "车队源自米纳尔迪，长期承担红牛年轻车手培养角色，同时保有独立制造与比赛团队。",
@@ -133,7 +135,7 @@ export const teams: Team[] = [
     firstEntry: 1978,
     championships: 9,
     points: 11,
-    position: 8,
+    position: 9,
     drivers: ["sainz", "albon"],
     history: {
       zh: "威廉姆斯是 F1 最成功的独立车队之一，九次获得车队冠军，现正进行长期基础设施与竞技重建。",
@@ -149,8 +151,8 @@ export const teams: Team[] = [
     principal: "Jonathan Wheatley",
     firstEntry: 1993,
     championships: 0,
-    points: 6,
-    position: 9,
+    points: 12,
+    position: 8,
     drivers: ["bortoleto", "hulkenberg"],
     history: {
       zh: "Audi 在 2026 年接管索伯席位并以完整厂队身份参赛，底盘在欣维尔研发，动力单元来自德国诺伊堡。",
@@ -166,7 +168,7 @@ export const teams: Team[] = [
     principal: "Adrian Newey",
     firstEntry: 2018,
     championships: 0,
-    points: 2,
+    points: 1,
     position: 10,
     drivers: ["alonso", "stroll"],
     history: {
@@ -192,6 +194,8 @@ export const teams: Team[] = [
     },
   },
 ];
+
+teams.sort((left, right) => left.position - right.position);
 
 const driver = (
   id: string,
@@ -224,55 +228,31 @@ const driver = (
 });
 
 export const drivers: Driver[] = [
-  driver("antonelli", "Kimi", "Antonelli", "ANT", 12, "IT", ["意大利", "Italian"], "mercedes", 179, 1, 0, 2025, ["以出色的适应力与速度进入争冠行列的梅赛德斯新生代车手。", "Mercedes' young contender has combined rapid adaptation with front-running pace."]),
-  driver("russell", "George", "Russell", "RUS", 63, "GB", ["英国", "British"], "mercedes", 154, 2, 0, 2019, ["稳定、精确且擅长技术反馈，是梅赛德斯新时代的核心。", "Consistent, precise and technically articulate, Russell is central to Mercedes' next era."]),
-  driver("hamilton", "Lewis", "Hamilton", "HAM", 44, "GB", ["英国", "British"], "ferrari", 147, 3, 7, 2007, ["七届世界冠军，以纪录、比赛能力和赛场外影响力定义了一个时代。", "A seven-time champion whose records, racecraft and off-track influence helped define an era."]),
-  driver("leclerc", "Charles", "Leclerc", "LEC", 16, "MC", ["摩纳哥", "Monegasque"], "ferrari", 108, 4, 0, 2018, ["以单圈速度、刹车控制和对法拉利的长期承诺著称。", "Known for qualifying speed, braking control and a long-term commitment to Ferrari."]),
-  driver("norris", "Lando", "Norris", "NOR", 1, "GB", ["英国", "British"], "mclaren", 97, 5, 1, 2019, ["2025 世界冠军，拥有流畅速度、轮胎管理与现代车手沟通风格。", "The 2025 World Champion blends fluid pace, tyre management and a modern communication style."]),
-  driver("piastri", "Oscar", "Piastri", "PIA", 81, "AU", ["澳大利亚", "Australian"], "mclaren", 82, 6, 0, 2023, ["冷静、高效，职业生涯初期便展现出顶尖比赛执行力。", "Calm and efficient, Piastri showed elite race execution from the beginning of his F1 career."]),
-  driver("verstappen", "Max", "Verstappen", "VER", 3, "NL", ["荷兰", "Dutch"], "red-bull", 76, 7, 4, 2015, ["四届世界冠军，以极限控制、雨战能力与持续高强度输出闻名。", "A four-time champion renowned for car control, wet-weather ability and relentless intensity."]),
-  driver("hadjar", "Isack", "Hadjar", "HAD", 6, "FR", ["法国", "French"], "red-bull", 52, 8, 0, 2025, ["从 Racing Bulls 晋升红牛，以果断进攻和快速学习赢得机会。", "Promoted from Racing Bulls after earning attention through decisive racing and fast learning."]),
-  driver("gasly", "Pierre", "Gasly", "GAS", 10, "FR", ["法国", "French"], "alpine", 42, 9, 0, 2017, ["大奖赛冠军，擅长把握复杂比赛与有限赛车窗口。", "A Grand Prix winner skilled at extracting results from complex races and narrow car windows."]),
-  driver("lawson", "Liam", "Lawson", "LAW", 30, "NZ", ["新西兰", "New Zealander"], "racing-bulls", 39, 10, 0, 2023, ["以适应不同赛车和直接的比赛风格建立声誉。", "Built his reputation through adaptability across machinery and a direct racing style."]),
-  driver("lindblad", "Arvid", "Lindblad", "LIN", 41, "GB", ["英国", "British"], "racing-bulls", 20, 11, 0, 2026, ["2026 新秀，是红牛青训体系中备受关注的新一代车手。", "The 2026 rookie is one of the most closely watched graduates of Red Bull's junior system."]),
-  driver("bearman", "Oliver", "Bearman", "BEA", 87, "GB", ["英国", "British"], "haas", 18, 12, 0, 2024, ["年轻、果断，并在替补出场与首个完整赛季中迅速证明速度。", "Young and decisive, Bearman quickly demonstrated pace in substitute appearances and his first full season."]),
-  driver("colapinto", "Franco", "Colapinto", "COL", 43, "AR", ["阿根廷", "Argentine"], "alpine", 18, 13, 0, 2024, ["阿根廷车手，以勇敢的超车判断和强烈的公众号召力受到关注。", "The Argentine attracted attention through bold overtaking judgement and strong public appeal."]),
-  driver("bortoleto", "Gabriel", "Bortoleto", "BOR", 5, "BR", ["巴西", "Brazilian"], "audi", 6, 14, 0, 2025, ["连续赢得青年方程式重要锦标后进入 F1，驾驶风格成熟克制。", "Entered F1 after consecutive major junior titles, bringing a mature and measured driving style."]),
+  driver("antonelli", "Kimi", "Antonelli", "ANT", 12, "IT", ["意大利", "Italian"], "mercedes", 219, 1, 0, 2025, ["以出色的适应力与速度进入争冠行列的梅赛德斯新生代车手。", "Mercedes' young contender has combined rapid adaptation with front-running pace."]),
+  driver("russell", "George", "Russell", "RUS", 63, "GB", ["英国", "British"], "mercedes", 160, 3, 0, 2019, ["稳定、精确且擅长技术反馈，是梅赛德斯新时代的核心。", "Consistent, precise and technically articulate, Russell is central to Mercedes' next era."]),
+  driver("hamilton", "Lewis", "Hamilton", "HAM", 44, "GB", ["英国", "British"], "ferrari", 169, 2, 7, 2007, ["七届世界冠军，以纪录、比赛能力和赛场外影响力定义了一个时代。", "A seven-time champion whose records, racecraft and off-track influence helped define an era."]),
+  driver("leclerc", "Charles", "Leclerc", "LEC", 16, "MC", ["摩纳哥", "Monegasque"], "ferrari", 138, 4, 0, 2018, ["以单圈速度、刹车控制和对法拉利的长期承诺著称。", "Known for qualifying speed, braking control and a long-term commitment to Ferrari."]),
+  driver("norris", "Lando", "Norris", "NOR", 1, "GB", ["英国", "British"], "mclaren", 128, 5, 1, 2019, ["2025 世界冠军，拥有流畅速度、轮胎管理与现代车手沟通风格。", "The 2025 World Champion blends fluid pace, tyre management and a modern communication style."]),
+  driver("piastri", "Oscar", "Piastri", "PIA", 81, "AU", ["澳大利亚", "Australian"], "mclaren", 92, 7, 0, 2023, ["冷静、高效，职业生涯初期便展现出顶尖比赛执行力。", "Calm and efficient, Piastri showed elite race execution from the beginning of his F1 career."]),
+  driver("verstappen", "Max", "Verstappen", "VER", 3, "NL", ["荷兰", "Dutch"], "red-bull", 109, 6, 4, 2015, ["四届世界冠军，以极限控制、雨战能力与持续高强度输出闻名。", "A four-time champion renowned for car control, wet-weather ability and relentless intensity."]),
+  driver("hadjar", "Isack", "Hadjar", "HAD", 6, "FR", ["法国", "French"], "red-bull", 68, 8, 0, 2025, ["从 Racing Bulls 晋升红牛，以果断进攻和快速学习赢得机会。", "Promoted from Racing Bulls after earning attention through decisive racing and fast learning."]),
+  driver("gasly", "Pierre", "Gasly", "GAS", 10, "FR", ["法国", "French"], "alpine", 42, 10, 0, 2017, ["大奖赛冠军，擅长把握复杂比赛与有限赛车窗口。", "A Grand Prix winner skilled at extracting results from complex races and narrow car windows."]),
+  driver("lawson", "Liam", "Lawson", "LAW", 30, "NZ", ["新西兰", "New Zealander"], "racing-bulls", 43, 9, 0, 2023, ["以适应不同赛车和直接的比赛风格建立声誉。", "Built his reputation through adaptability across machinery and a direct racing style."]),
+  driver("lindblad", "Arvid", "Lindblad", "LIN", 41, "GB", ["英国", "British"], "racing-bulls", 23, 11, 0, 2026, ["2026 新秀，是红牛青训体系中备受关注的新一代车手。", "The 2026 rookie is one of the most closely watched graduates of Red Bull's junior system."]),
+  driver("bearman", "Oliver", "Bearman", "BEA", 87, "GB", ["英国", "British"], "haas", 18, 13, 0, 2024, ["年轻、果断，并在替补出场与首个完整赛季中迅速证明速度。", "Young and decisive, Bearman quickly demonstrated pace in substitute appearances and his first full season."]),
+  driver("colapinto", "Franco", "Colapinto", "COL", 43, "AR", ["阿根廷", "Argentine"], "alpine", 19, 12, 0, 2024, ["阿根廷车手，以勇敢的超车判断和强烈的公众号召力受到关注。", "The Argentine attracted attention through bold overtaking judgement and strong public appeal."]),
+  driver("bortoleto", "Gabriel", "Bortoleto", "BOR", 5, "BR", ["巴西", "Brazilian"], "audi", 10, 14, 0, 2025, ["连续赢得青年方程式重要锦标后进入 F1，驾驶风格成熟克制。", "Entered F1 after consecutive major junior titles, bringing a mature and measured driving style."]),
   driver("sainz", "Carlos", "Sainz", "SAI", 55, "ES", ["西班牙", "Spanish"], "williams", 6, 15, 0, 2015, ["多站冠军，以完整技术反馈、策略意识和适应力著称。", "A multiple race winner known for complete technical feedback, strategy awareness and adaptability."]),
   driver("albon", "Alexander", "Albon", "ALB", 23, "TH", ["泰国", "Thai"], "williams", 5, 16, 0, 2019, ["擅长防守和管理不稳定的赛车平台，是威廉姆斯重建的重要基准。", "A skilled defender and manager of difficult cars, Albon is a key benchmark in Williams' rebuild."]),
   driver("ocon", "Esteban", "Ocon", "OCO", 31, "FR", ["法国", "French"], "haas", 3, 17, 0, 2016, ["大奖赛冠军，以坚韧、防守与混乱比赛中的执行力见长。", "A Grand Prix winner valued for resilience, defence and execution in unpredictable races."]),
-  driver("alonso", "Fernando", "Alonso", "ALO", 14, "ES", ["西班牙", "Spanish"], "aston-martin", 1, 18, 2, 2001, ["两届世界冠军，以比赛阅读、长寿和全能驾驶能力闻名。", "A two-time champion celebrated for race reading, longevity and broad driving ability."]),
-  driver("hulkenberg", "Nico", "Hülkenberg", "HUL", 27, "DE", ["德国", "German"], "audi", 0, 19, 0, 2010, ["经验丰富的技术型车手，是 Audi 厂队计划的重要开发基准。", "An experienced technical driver and an important development reference for Audi's works programme."]),
+  driver("alonso", "Fernando", "Alonso", "ALO", 14, "ES", ["西班牙", "Spanish"], "aston-martin", 1, 19, 2, 2001, ["两届世界冠军，以比赛阅读、长寿和全能驾驶能力闻名。", "A two-time champion celebrated for race reading, longevity and broad driving ability."]),
+  driver("hulkenberg", "Nico", "Hülkenberg", "HUL", 27, "DE", ["德国", "German"], "audi", 2, 18, 0, 2010, ["经验丰富的技术型车手，是 Audi 厂队计划的重要开发基准。", "An experienced technical driver and an important development reference for Audi's works programme."]),
   driver("bottas", "Valtteri", "Bottas", "BOT", 77, "FI", ["芬兰", "Finnish"], "cadillac", 0, 20, 0, 2013, ["十次大奖赛冠军，带着顶级车队经验参与 Cadillac 的首个赛季。", "A ten-time Grand Prix winner bringing front-running experience to Cadillac's debut season."]),
   driver("perez", "Sergio", "Pérez", "PER", 11, "MX", ["墨西哥", "Mexican"], "cadillac", 0, 21, 0, 2011, ["多站冠军，以轮胎管理、街道赛表现与逆境恢复能力著称。", "A multiple winner known for tyre management, street-circuit performance and recovery drives."]),
   driver("stroll", "Lance", "Stroll", "STR", 18, "CA", ["加拿大", "Canadian"], "aston-martin", 0, 22, 0, 2017, ["领奖台车手，在低抓地力和多变天气中曾多次取得突出结果。", "A podium finisher who has often produced his strongest results in low grip and changing weather."]),
 ];
 
-const driverImages: Record<string, string> = {
-  antonelli: "/images/drivers/2026/antonelli.webp",
-  russell: "/images/drivers/2026/russell.webp",
-  hamilton: "/images/drivers/2026/hamilton.webp",
-  leclerc: "/images/drivers/2026/leclerc.webp",
-  norris: "/images/drivers/2026/norris.webp",
-  piastri: "/images/drivers/2026/piastri.webp",
-  verstappen: "/images/drivers/2026/verstappen.webp",
-  hadjar: "/images/drivers/2026/hadjar.webp",
-  gasly: "/images/drivers/2026/gasly.webp",
-  lawson: "/images/drivers/2026/lawson.webp",
-  lindblad: "/images/drivers/2026/lindblad.webp",
-  bearman: "/images/drivers/2026/bearman.webp",
-  colapinto: "/images/drivers/2026/colapinto.webp",
-  bortoleto: "/images/drivers/2026/bortoleto.webp",
-  sainz: "/images/drivers/2026/sainz.webp",
-  albon: "/images/drivers/2026/albon.webp",
-  ocon: "/images/drivers/2026/ocon.webp",
-  alonso: "/images/drivers/2026/alonso.webp",
-  hulkenberg: "/images/drivers/2026/hulkenberg.webp",
-  bottas: "/images/drivers/2026/bottas.webp",
-  perez: "/images/drivers/2026/perez.webp",
-  stroll: "/images/drivers/2026/stroll.webp",
-};
-for (const driverItem of drivers) driverItem.image = driverImages[driverItem.id];
+drivers.sort((left, right) => left.position - right.position);
 
 const car = (
   teamId: string,
@@ -388,6 +368,7 @@ export const circuits: Circuit[] = [
   circuit("monza", "Autodromo Nazionale Monza", ["意大利大奖赛", "Italian Grand Prix"], ["蒙扎", "Monza"], ["意大利", "Italy"], "IT", 5.793, 53, 11, 1950, "1:21.046", "Rubens Barrichello · 2004", ["‘速度圣殿’以超长全油门比例和重刹车减速弯定义最低下压力设定。", "The Temple of Speed combines extended full-throttle running with heavy-braking chicanes and minimum downforce."]),
   circuit("madrid", "Madring", ["西班牙大奖赛", "Spanish Grand Prix"], ["马德里", "Madrid"], ["西班牙", "Spain"], "ES", undefined, undefined, undefined, 2026, undefined, undefined, ["2026 新赛道；最终比赛长度、圈数与纪录需以 FIA 认证和正式周末文件为准。", "A new 2026 venue; final length, lap count and records remain subject to FIA homologation and official event documents."]),
   circuit("baku", "Baku City Circuit", ["阿塞拜疆大奖赛", "Azerbaijan Grand Prix"], ["巴库", "Baku"], ["阿塞拜疆", "Azerbaijan"], "AZ", 6.003, 51, 20, 2016, "1:43.009", "Charles Leclerc · 2019", ["古城极窄路段与全季最长直道之一形成极端反差，尾流和安全车可彻底改变比赛。", "An ultra-tight old-city section contrasts with one of the longest straights, making slipstream and safety cars decisive."]),
+  circuit("sepang", "Sepang International Circuit", ["马来西亚巴林大奖赛", "Bahrain Grand Prix in Malaysia"], ["雪邦", "Sepang"], ["马来西亚", "Malaysia"], "MY", undefined, undefined, undefined, 1999, undefined, undefined, ["2026 年 10 月的替代赛事已由 Formula 1 与 FIA 公布；最终比赛参数以正式周末文件为准。", "Formula 1 and the FIA announced this replacement event for October 2026; final race parameters remain subject to official event documents."]),
   circuit("marina-bay", "Marina Bay Street Circuit", ["新加坡大奖赛", "Singapore Grand Prix"], ["新加坡", "Singapore"], ["新加坡", "Singapore"], "SG", 4.94, 62, 19, 2008, "1:35.867", "Lewis Hamilton · 2023", ["高温、高湿与密集刹车的夜间街道赛，对体能、散热和轮胎控制要求极高。", "A hot, humid night street race with relentless braking demands physical fitness, cooling and tyre control."]),
   circuit("cota", "Circuit of the Americas", ["美国大奖赛", "United States Grand Prix"], ["奥斯汀", "Austin"], ["美国", "United States"], "US", 5.513, 56, 20, 2012, "1:36.169", "Charles Leclerc · 2019", ["大上坡 1 号弯、快速连续弯和长直道组成完整的现代赛道考题。", "A steep Turn 1, fast esses and long back straight create a complete modern circuit test."]),
   circuit("mexico-city", "Autódromo Hermanos Rodríguez", ["墨西哥城大奖赛", "Mexico City Grand Prix"], ["墨西哥城", "Mexico City"], ["墨西哥", "Mexico"], "MX", 4.304, 71, 17, 1963, "1:17.774", "Valtteri Bottas · 2021", ["高海拔稀薄空气削弱下压力和冷却效率，即使高翼设定也呈现极高直线速度。", "Thin high-altitude air reduces downforce and cooling, producing high straight-line speed even with large wings."]),
@@ -396,39 +377,6 @@ export const circuits: Circuit[] = [
   circuit("lusail", "Lusail International Circuit", ["卡塔尔大奖赛", "Qatar Grand Prix"], ["卢赛尔", "Lusail"], ["卡塔尔", "Qatar"], "QA", 5.419, 57, 16, 2021, "1:24.319", "Max Verstappen · 2023", ["快速流动弯道和高横向载荷持续考验轮胎结构与车手体能。", "Fast, flowing corners and sustained lateral load place exceptional stress on tyres and drivers."]),
   circuit("yas-marina", "Yas Marina Circuit", ["阿布扎比大奖赛", "Abu Dhabi Grand Prix"], ["阿布扎比", "Abu Dhabi"], ["阿联酋", "United Arab Emirates"], "AE", 5.281, 58, 16, 2009, "1:26.103", "Max Verstappen · 2021", ["黄昏收官战从日光进入夜间，长直道与技术性末段要求均衡设定。", "The twilight finale transitions from daylight to night, combining long straights with a technical final sector."]),
 ];
-
-const circuitImages: Record<string, string> = {
-  "albert-park": "/images/circuits/albert-park.webp",
-  shanghai: "/images/circuits/shanghai.webp",
-  suzuka: "/images/circuits/suzuka.webp",
-  miami: "/images/circuits/miami.webp",
-  "gilles-villeneuve": "/images/circuits/gilles-villeneuve.webp",
-  monaco: "/images/circuits/monaco.webp",
-  barcelona: "/images/circuits/barcelona.webp",
-  "red-bull-ring": "/images/circuits/red-bull-ring.webp",
-  silverstone: "/images/circuits/silverstone.webp",
-  spa: "/images/circuits/spa.webp",
-  hungaroring: "/images/circuits/hungaroring.webp",
-  zandvoort: "/images/circuits/zandvoort.webp",
-  monza: "/images/circuits/monza.webp",
-  madrid: "/images/circuits/madrid.webp",
-  baku: "/images/circuits/baku.webp",
-  "marina-bay": "/images/circuits/marina-bay.webp",
-  cota: "/images/circuits/cota.webp",
-  "mexico-city": "/images/circuits/mexico-city.webp",
-  interlagos: "/images/circuits/interlagos.webp",
-  "las-vegas": "/images/circuits/las-vegas.webp",
-  lusail: "/images/circuits/lusail.webp",
-  "yas-marina": "/images/circuits/yas-marina.webp",
-};
-for (const circuitItem of circuits) circuitItem.image = circuitImages[circuitItem.id];
-
-function raceStatusFor(startDate: string, endDate: string): Race["status"] {
-  const today = new Date().toISOString().slice(0, 10);
-  if (today > endDate) return "completed";
-  if (today >= startDate) return "live";
-  return "upcoming";
-}
 
 const podium = (
   first: [string, string, string, string],
@@ -449,7 +397,10 @@ const race = (
   endDate: string,
   result?: NonNullable<Race["podium"]>,
   sprint = false,
+  id = `${CURRENT_SEASON}-${circuitId}`,
+  confirmation: Race["confirmation"] = "confirmed",
 ): Race => ({
+  id,
   season: CURRENT_SEASON,
   round,
   circuitId,
@@ -457,8 +408,9 @@ const race = (
   countryCode,
   startDate,
   endDate,
-  status: raceStatusFor(startDate, endDate),
+  status: raceStatusFor({ startDate, endDate, classificationPublished: Boolean(result) }),
   sprint,
+  confirmation,
   winner: result?.[0].driverId,
   winningTime: result?.[0].time,
   podium: result,
@@ -473,26 +425,29 @@ export const races2026: Race[] = [
   race(6, "monaco", ["摩纳哥大奖赛", "Monaco Grand Prix"], "MC", "2026-06-05", "2026-06-07", podium(["antonelli", "Kimi Antonelli", "Mercedes", "2:23:31.243"], ["hamilton", "Lewis Hamilton", "Ferrari", "+6.271"], ["gasly", "Pierre Gasly", "Alpine", "+20.369"])),
   race(7, "barcelona", ["巴塞罗那-加泰罗尼亚大奖赛", "Barcelona-Catalunya Grand Prix"], "ES", "2026-06-12", "2026-06-14", podium(["hamilton", "Lewis Hamilton", "Ferrari", "1:32:28.105"], ["russell", "George Russell", "Mercedes", "+19.561"], ["norris", "Lando Norris", "McLaren", "+23.719"])),
   race(8, "red-bull-ring", ["奥地利大奖赛", "Austrian Grand Prix"], "AT", "2026-06-26", "2026-06-28", podium(["russell", "George Russell", "Mercedes", "1:26:37.979"], ["verstappen", "Max Verstappen", "Red Bull", "+1.611"], ["antonelli", "Kimi Antonelli", "Mercedes", "+1.986"])),
-  race(9, "silverstone", ["英国大奖赛", "British Grand Prix"], "GB", "2026-07-03", "2026-07-05", podium(["leclerc", "Charles Leclerc", "Ferrari", "1:27:11.335"], ["russell", "George Russell", "Mercedes", "+0.427"], ["hamilton", "Lewis Hamilton", "Ferrari", "+0.772"])),
-  race(10, "spa", ["比利时大奖赛", "Belgian Grand Prix"], "BE", "2026-07-17", "2026-07-19", undefined, true),
-  race(11, "hungaroring", ["匈牙利大奖赛", "Hungarian Grand Prix"], "HU", "2026-07-24", "2026-07-26"),
-  race(12, "zandvoort", ["荷兰大奖赛", "Dutch Grand Prix"], "NL", "2026-08-21", "2026-08-23"),
+  race(9, "silverstone", ["英国大奖赛", "British Grand Prix"], "GB", "2026-07-03", "2026-07-05", podium(["leclerc", "Charles Leclerc", "Ferrari", "1:27:11.335"], ["russell", "George Russell", "Mercedes", "+0.427"], ["hamilton", "Lewis Hamilton", "Ferrari", "+0.772"]), true),
+  race(10, "spa", ["比利时大奖赛", "Belgian Grand Prix"], "BE", "2026-07-17", "2026-07-19", podium(["antonelli", "Kimi Antonelli", "Mercedes", "1:24:42.479"], ["leclerc", "Charles Leclerc", "Ferrari", "+1.952"], ["verstappen", "Max Verstappen", "Red Bull Racing", "+11.586"])),
+  race(11, "hungaroring", ["匈牙利大奖赛", "Hungarian Grand Prix"], "HU", "2026-07-24", "2026-07-26", podium(["norris", "Lando Norris", "McLaren", "1:39:56.180"], ["verstappen", "Max Verstappen", "Red Bull Racing", "+15.080"], ["antonelli", "Kimi Antonelli", "Mercedes", "+18.728"])),
+  race(12, "zandvoort", ["荷兰大奖赛", "Dutch Grand Prix"], "NL", "2026-08-21", "2026-08-23", undefined, true),
   race(13, "monza", ["意大利大奖赛", "Italian Grand Prix"], "IT", "2026-09-04", "2026-09-06"),
   race(14, "madrid", ["西班牙大奖赛", "Spanish Grand Prix"], "ES", "2026-09-11", "2026-09-13"),
   race(15, "baku", ["阿塞拜疆大奖赛", "Azerbaijan Grand Prix"], "AZ", "2026-09-24", "2026-09-26"),
-  race(16, "marina-bay", ["新加坡大奖赛", "Singapore Grand Prix"], "SG", "2026-10-09", "2026-10-11"),
-  race(17, "cota", ["美国大奖赛", "United States Grand Prix"], "US", "2026-10-23", "2026-10-25", undefined, true),
-  race(18, "mexico-city", ["墨西哥城大奖赛", "Mexico City Grand Prix"], "MX", "2026-10-30", "2026-11-01"),
-  race(19, "interlagos", ["圣保罗大奖赛", "São Paulo Grand Prix"], "BR", "2026-11-06", "2026-11-08", undefined, true),
-  race(20, "las-vegas", ["拉斯维加斯大奖赛", "Las Vegas Grand Prix"], "US", "2026-11-19", "2026-11-21"),
-  race(21, "lusail", ["卡塔尔大奖赛", "Qatar Grand Prix"], "QA", "2026-11-27", "2026-11-29", undefined, true),
-  race(22, "yas-marina", ["阿布扎比大奖赛", "Abu Dhabi Grand Prix"], "AE", "2026-12-04", "2026-12-06"),
+  race(16, "sepang", ["马来西亚巴林大奖赛", "Bahrain Grand Prix in Malaysia"], "MY", "2026-10-02", "2026-10-04", undefined, false, "2026-bahrain-malaysia-sepang", "provisional"),
+  race(17, "marina-bay", ["新加坡大奖赛", "Singapore Grand Prix"], "SG", "2026-10-09", "2026-10-11", undefined, true),
+  race(18, "cota", ["美国大奖赛", "United States Grand Prix"], "US", "2026-10-23", "2026-10-25"),
+  race(19, "mexico-city", ["墨西哥城大奖赛", "Mexico City Grand Prix"], "MX", "2026-10-30", "2026-11-01"),
+  race(20, "interlagos", ["圣保罗大奖赛", "São Paulo Grand Prix"], "BR", "2026-11-06", "2026-11-08"),
+  race(21, "las-vegas", ["拉斯维加斯大奖赛", "Las Vegas Grand Prix"], "US", "2026-11-19", "2026-11-21"),
+  race(22, "lusail", ["卡塔尔大奖赛", "Qatar Grand Prix"], "QA", "2026-11-27", "2026-11-29"),
+  race(23, "yas-marina", ["阿布扎比大奖赛", "Abu Dhabi Grand Prix"], "AE", "2026-12-04", "2026-12-06"),
 ];
 
 export const news: NewsItem[] = [
   {
     id: "belgium-weekend-2026",
     publishedAt: "2026-07-17",
+    expiresAt: "2026-07-20",
+    kind: "event-status",
     category: "race",
     publisher: "Formula 1",
     title: { zh: "2026 比利时大奖赛周末进行中", en: "The 2026 Belgian Grand Prix weekend is under way" },

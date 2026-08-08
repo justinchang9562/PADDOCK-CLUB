@@ -112,6 +112,18 @@ export function AuthForm({ locale, page, error, sent = false }: AuthFormProps) {
                 />
               </label>
             )}
+            {isSignUp && (
+              <label className="auth-consent">
+                <input name="legalAccepted" type="checkbox" value="yes" required />
+                <span>
+                  {zh ? "我已阅读并同意" : "I have read and agree to the"}{" "}
+                  <Link href={`/${locale}/terms`} target="_blank">{zh ? "使用条款" : "Terms of use"}</Link>
+                  {zh ? "，并确认已阅读" : ", and acknowledge the"}{" "}
+                  <Link href={`/${locale}/privacy`} target="_blank">{zh ? "隐私政策" : "Privacy policy"}</Link>
+                  {zh ? "。" : "."}
+                </span>
+              </label>
+            )}
             <button className="primary-button" type="submit" disabled={!configured}>{submitLabel}</button>
           </form>
         )}

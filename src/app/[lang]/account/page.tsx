@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AccountProfileForm } from "@/components/account-profile-form";
+import { deleteAccount } from "./actions";
 import { Icon } from "@/components/icons";
 import { isLocale } from "@/lib/i18n";
 import { hasSupabaseConfig } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function AccountPage({ params }: PageProps<"/[lang]/account">) {
+export default async function AccountPage({ params, searchParams }: PageProps<"/[lang]/account">) {
   const { lang } = await params;
+  const { deleteError } = await searchParams;
   if (!isLocale(lang)) notFound();
   if (!hasSupabaseConfig()) redirect(`/${lang}/sign-in`);
 
@@ -28,6 +30,11 @@ export default async function AccountPage({ params }: PageProps<"/[lang]/account
     day: "numeric",
     timeZone: "UTC",
   }).format(new Date(profile?.created_at ?? user.created_at));
+  const deletionError = typeof deleteError === "string"
+    ? zh
+      ? "账户删除未完成。请检查确认文字和服务端删除配置后重试。"
+      : "Account deletion was not completed. Check the confirmation text and server-side deletion configuration, then try again."
+    : null;
 
   return (
     <main className="page-main account-page">
@@ -70,6 +77,23 @@ export default async function AccountPage({ params }: PageProps<"/[lang]/account
             </form>
           </div>
         </aside>
+      </section>
+
+      <section className="account-card account-danger-zone" aria-labelledby="delete-account-heading">
+        <div className="account-card-heading">
+          <span className="eyebrow">DELETE PADDOCK ID</span>
+          <h2 id="delete-account-heading">{zh ? "删除账户与个人资料" : "Delete account and personal data"}</h2>
+          <p>{zh ? "此操作会删除 Supabase Auth 账户、个人资料、云端收藏与头像对象，无法撤销。游客本地收藏不会被服务器读取或删除。" : "This permanently removes the Supabase Auth account, profile, cloud favorites and avatar object. Guest favorites stored locally are not read or deleted by the server."}</p>
+        </div>
+        <form action={deleteAccount} className="account-delete-form">
+          <input type="hidden" name="locale" value={lang} />
+          <label>
+            <span>{zh ? "输入“删除账户”以确认" : "Type DELETE to confirm"}</span>
+            <input name="confirmation" required autoComplete="off" pattern={zh ? "删除账户" : "DELETE"} />
+          </label>
+          <button className="primary-button danger-button" type="submit">{zh ? "永久删除 PADDOCK ID" : "Permanently delete PADDOCK ID"}</button>
+        </form>
+        {deletionError && <p className="account-notice error" role="alert">{deletionError}</p>}
       </section>
     </main>
   );

@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { FavoriteEntityType } from "@/lib/supabase/database.types";
+import { canonicalFavoriteKey } from "@/lib/favorite-keys";
 
 const STORAGE_KEY = "paddock-index:favorites:v1";
 const LEGACY_STORAGE_KEY = "paddock-club:favorites:v1";
@@ -29,6 +30,7 @@ type FavoriteContextValue = {
 const FavoriteContext = createContext<FavoriteContextValue | null>(null);
 
 function parseFavoriteKey(key: string): ParsedFavorite | null {
+  key = canonicalFavoriteKey(key);
   const separator = key.indexOf(":");
   if (separator < 1) return null;
 
@@ -98,6 +100,31 @@ export function FavoritesProvider({ children, userId }: { children: React.ReactN
     setFavorites(normalized);
   }, []);
 
+  const migrateLegacyCloudFavorites = useCallback(async (rows: Array<{ entity_type: FavoriteEntityType; entity_id: string }>) => {
+    if (!supabase || !userId) return true;
+    const migrations = rows.map((row) => {
+      const original = `${row.entity_type}:${row.entity_id}`;
+      const canonical = canonicalFavoriteKey(original);
+      return { row, canonical, parsed: parseFavoriteKey(canonical), changed: canonical !== original };
+    }).filter((item) => item.changed && item.parsed);
+    if (!migrations.length) return true;
+
+    const { error: insertError } = await supabase.from("favorites").upsert(migrations.map((item) => ({
+      user_id: userId,
+      entity_type: item.parsed!.entityType,
+      entity_id: item.parsed!.entityId,
+    })), { onConflict: "user_id,entity_type,entity_id", ignoreDuplicates: true });
+    if (insertError) return false;
+
+    const deletions = await Promise.all(migrations.map((item) => supabase
+      .from("favorites")
+      .delete()
+      .eq("user_id", userId)
+      .eq("entity_type", item.row.entity_type)
+      .eq("entity_id", item.row.entity_id)));
+    return deletions.every((result) => !result.error);
+  }, [supabase, userId]);
+
   const loadCloudFavorites = useCallback(async () => {
     if (!supabase || !userId || pendingKeysRef.current.size) return;
     setSyncState("syncing");
@@ -110,10 +137,10 @@ export function FavoritesProvider({ children, userId }: { children: React.ReactN
       setSyncState("error");
       return;
     }
-
-    replaceFavorites(data.map((item) => `${item.entity_type}:${item.entity_id}`));
-    setSyncState("synced");
-  }, [replaceFavorites, supabase, userId]);
+    const migrated = await migrateLegacyCloudFavorites(data);
+    replaceFavorites(data.map((item) => canonicalFavoriteKey(`${item.entity_type}:${item.entity_id}`)));
+    setSyncState(migrated ? "synced" : "error");
+  }, [migrateLegacyCloudFavorites, replaceFavorites, supabase, userId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -165,9 +192,10 @@ export function FavoritesProvider({ children, userId }: { children: React.ReactN
         return;
       }
 
-      const cloudFavorites = data.map((item) => `${item.entity_type}:${item.entity_id}`);
+      const cloudMigrationSucceeded = await migrateLegacyCloudFavorites(data);
+      const cloudFavorites = data.map((item) => canonicalFavoriteKey(`${item.entity_type}:${item.entity_id}`));
       replaceFavorites(migrationFailed ? [...cloudFavorites, ...localFavorites] : cloudFavorites);
-      if (migrationFailed) {
+      if (migrationFailed || !cloudMigrationSucceeded) {
         setSyncState("error");
       } else {
         clearMigratedLocalFavorites();
@@ -180,7 +208,7 @@ export function FavoritesProvider({ children, userId }: { children: React.ReactN
     return () => {
       cancelled = true;
     };
-  }, [replaceFavorites, supabase, userId]);
+  }, [migrateLegacyCloudFavorites, replaceFavorites, supabase, userId]);
 
   useEffect(() => {
     if (!supabase || !userId) return;

@@ -31,7 +31,7 @@ export default async function SeasonPage({ params }: PageProps<"/[lang]/seasons/
   return (
     <main className="page-main">
       <section className="page-hero season-hero">
-        <DirectoryHeroBackdrop variant="season" src="/images/home/red-bull-night.jpg" mark={String(season)} />
+        <DirectoryHeroBackdrop variant="season" src="/images/red-bull-rb22.jpg" mark={String(season)} />
         <div>
           <span className="eyebrow">FIA FORMULA ONE WORLD CHAMPIONSHIP</span>
           <h1><span>{season}</span>{lang === "zh" ? "赛季" : "Season"}</h1>
@@ -48,7 +48,7 @@ export default async function SeasonPage({ params }: PageProps<"/[lang]/seasons/
       <section className="page-section compact">
         <SectionHeading eyebrow={lang === "zh" ? "赛历" : "Calendar"} title={lang === "zh" ? `${season} 的每一站。` : `Every round of ${season}.`} description={lang === "zh" ? "点开任意比赛，查看赛道参数、周末状态与正式分类。" : "Open any race for circuit parameters, weekend status and the published classification."} />
         {raceResult.data.length ? (
-          <div className="card-grid three-col">{raceResult.data.map((race) => <RaceCard key={race.round} race={race} locale={lang} featured={race.status === "live"} />)}</div>
+          <div className="card-grid three-col">{raceResult.data.map((race) => <RaceCard key={race.id} race={race} locale={lang} featured={race.status === "live"} />)}</div>
         ) : (
           <div className="empty-state"><strong>{lang === "zh" ? "暂时无法读取这个赛季" : "This season could not be loaded"}</strong><span>{lang === "zh" ? "上游历史数据库没有返回赛历，请稍后重试。" : "The historical provider returned no calendar. Please try again later."}</span></div>
         )}
@@ -58,12 +58,12 @@ export default async function SeasonPage({ params }: PageProps<"/[lang]/seasons/
         <SectionHeading eyebrow={lang === "zh" ? "世界锦标赛" : "World championship"} title={lang === "zh" ? "两张积分榜，同一个赛季。" : "Two tables. One season."} />
         <div className="standings-stack">
           <div>
-            <div className="mini-heading"><h3>{lang === "zh" ? "车手积分榜" : "Drivers' standings"}</h3><span>{driverResult.updatedAt}</span></div>
+            <div className="mini-heading"><h3>{lang === "zh" ? "车手积分榜" : "Drivers' standings"}</h3><span>{(driverResult.verifiedAt ?? driverResult.sourceUpdatedAt ?? driverResult.fetchedAt).slice(0, 10)}</span></div>
             {driverResult.data.length ? <DriverStandingsTable rows={driverResult.data} locale={lang} /> : <div className="empty-state compact"><strong>{lang === "zh" ? "没有车手积分数据" : "No driver standings"}</strong></div>}
             <DataSourceNote result={driverResult} locale={lang} />
           </div>
           <div>
-            <div className="mini-heading"><h3>{lang === "zh" ? "车队积分榜" : "Constructors' standings"}</h3><span>{teamResult.updatedAt}</span></div>
+            <div className="mini-heading"><h3>{lang === "zh" ? "车队积分榜" : "Constructors' standings"}</h3><span>{(teamResult.verifiedAt ?? teamResult.sourceUpdatedAt ?? teamResult.fetchedAt).slice(0, 10)}</span></div>
             {teamResult.data.length ? <TeamStandingsTable rows={teamResult.data} locale={lang} /> : <div className="empty-state compact"><strong>{lang === "zh" ? "没有车队积分数据" : "No constructor standings"}</strong></div>}
             <DataSourceNote result={teamResult} locale={lang} />
           </div>

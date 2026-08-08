@@ -39,7 +39,7 @@ export function buildSearchIndex(locale: Locale): SearchEntity[] {
   }));
 
   const raceItems: SearchEntity[] = races2026.map((race) => ({
-    id: `${race.season}-${race.round}`,
+    id: race.id,
     type: "race",
     title: race.name[locale],
     subtitle: `${race.season} · R${race.round}`,

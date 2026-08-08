@@ -15,7 +15,7 @@ export default async function CircuitsPage({ params }: PageProps<"/[lang]/circui
   return (
     <main className="page-main">
       <section className="index-hero circuits-index-hero">
-        <DirectoryHeroBackdrop variant="circuits" src="/images/circuits/spa.webp" secondarySrc="/images/circuits/layouts/spa.png" mark="22" />
+        <DirectoryHeroBackdrop variant="circuits" mark={String(circuits.length)} />
         <div><span className="eyebrow">2026 WORLD TOUR</span><h1>{lang === "zh" ? <>每条线，<br/><span>都有性格</span></> : <>Every line<br/><span>has a character</span></>}</h1><p>{lang === "zh" ? "从摩纳哥的护墙到斯帕的天气，从蒙扎低下压力到墨西哥城高海拔——比较长度、圈数、弯角、纪录与赛道特征。" : "From Monaco's walls to Spa's weather, Monza's low drag to Mexico City's altitude—compare length, laps, corners, records and character."}</p></div>
         <div className="circuit-hero-stat"><span>{lang === "zh" ? "最长单圈" : "Longest lap"}</span><strong>{longest.lengthKm}<small>km</small></strong><b>{longest.name}</b></div>
       </section>

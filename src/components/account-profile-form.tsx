@@ -111,8 +111,9 @@ export function AccountProfileForm({
     }, { onConflict: "id" });
 
     if (profileError) {
+      await supabase.storage.from("avatars").remove([objectPath]);
       setPreviewUrl(null);
-      setNotice({ tone: "error", text: zh ? "头像已上传，但账户资料更新失败，请重试。" : "The image uploaded, but your profile could not be updated. Please try again." });
+      setNotice({ tone: "error", text: zh ? "账户资料更新失败，已清理未关联的头像文件，请重试。" : "The profile update failed, and the unlinked avatar file was cleaned up. Please try again." });
     } else {
       setAvatarUrl(nextAvatarUrl);
       setPreviewUrl(null);

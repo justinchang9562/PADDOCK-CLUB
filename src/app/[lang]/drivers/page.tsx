@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DirectoryHeroBackdrop } from "@/components/directory-hero-backdrop";
 import { DriverCard } from "@/components/entity-cards";
@@ -19,7 +18,7 @@ export default async function DriversPage({ params }: PageProps<"/[lang]/drivers
   return (
     <main className="page-main">
       <section className="index-hero drivers-index-hero" style={{ "--entity-color": team.color } as React.CSSProperties}>
-        <DirectoryHeroBackdrop variant="drivers" src={`/images/drivers/2026/${leader.id}.webp`} mark={String(leader.number)} />
+        <DirectoryHeroBackdrop variant="drivers" mark={String(leader.number)} />
         <div>
           <span className="eyebrow">2026 GRID · 22 DRIVERS</span>
           <h1>{lang === "zh" ? <>速度背后，<br/><span>是不同的人</span></> : <>Different minds<br/><span>One grid</span></>}</h1>
@@ -34,10 +33,7 @@ export default async function DriversPage({ params }: PageProps<"/[lang]/drivers
 
       <section className="page-section compact">
         <SectionHeading eyebrow={lang === "zh" ? "围场阵容" : "The grid"} title={lang === "zh" ? "22 位车手，11 支车队。" : "22 drivers. 11 teams."} />
-        <p className="prototype-media-note">
-          {lang === "zh" ? "车手图采用 F1 官方 2026 定妆素材并统一页面背景，仅用于本地原型；公开部署前需另行确认使用许可。" : "Driver imagery uses official 2026 F1 portrait assets with a unified page background for this local prototype; permission must be confirmed before public deployment."}
-          <Link href={`/${lang}/credits`}>{lang === "zh" ? "查看来源" : "View sources"}</Link>
-        </p>
+        <p className="prototype-media-note">{lang === "zh" ? "车手目录使用 PADDOCK INDEX 自有文字与数据卡片，不使用未授权的官方定妆照。" : "The driver directory uses PADDOCK INDEX data cards and does not reproduce unlicensed official portraits."}</p>
         <div className="card-grid three-col">{drivers.map((driver) => <DriverCard key={driver.id} driver={driver} locale={lang}/>)}</div>
       </section>
 

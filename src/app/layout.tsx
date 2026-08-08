@@ -31,8 +31,8 @@ const themeInitializer = `
 `;
 
 export const metadata: Metadata = {
-  title: { default: "PADDOCK INDEX — F1 Data & Reference", template: "%s — PADDOCK INDEX" },
-  description: "A bilingual Formula 1 season, race, driver, team, car and circuit reference platform.",
+  title: { default: "PADDOCK INDEX — Unofficial Formula 1 Data & Reference", template: "%s — PADDOCK INDEX" },
+  description: "An independent, unofficial bilingual Formula 1 season, race, driver, team, car and circuit reference platform.",
   applicationName: "PADDOCK INDEX",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "PADDOCK INDEX" },
 };

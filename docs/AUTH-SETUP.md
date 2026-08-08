@@ -11,7 +11,7 @@
 - Project URL
 - Publishable key（以 `sb_publishable_` 开头；旧项目可能显示 anon key）
 
-不要在前端或仓库中使用 `secret`、`service_role` 或数据库密码。
+不要在前端或仓库中使用 `secret`、`service_role` 或数据库密码。账户自助删除功能需要一个只在服务端/Cloudflare secret 中配置的 `SUPABASE_SERVICE_ROLE_KEY`，绝不能添加 `NEXT_PUBLIC_` 前缀。
 
 ## 2. 配置本地环境
 
@@ -20,11 +20,14 @@
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_YOUR_KEY
+PADDOCK_SITE_URL=http://localhost:3000
+# 仅服务端；本地测试账户删除时才填写
+SUPABASE_SERVICE_ROLE_KEY=
 ```
 
 `.env.local` 是 Next.js 注入 `NEXT_PUBLIC_` 浏览器变量的标准文件，已被 Git 忽略，不会提交到仓库。修改后需要重启 `npm run dev`。
 
-Cloudflare 本地预览还会读取 `.dev.vars`。为保持两种本地运行方式一致，可在 `.dev.vars` 中保存同样两项配置；不要在任何文件中加入 `secret` 或 `service_role` key。
+Cloudflare 本地预览还会读取 `.dev.vars`。为保持两种本地运行方式一致，可在 `.dev.vars` 中保存同样配置。`.dev.vars` 必须保持在 Git 忽略范围内；不要把任何 secret 提交到仓库。
 
 ## 3. 配置认证 URL
 
@@ -93,13 +96,14 @@ supabase/migrations/20260801114500_profiles_and_favorites.sql
 
 ```text
 supabase/migrations/20260802002500_profile_avatars.sql
+supabase/migrations/20260808160000_avatar_policy_hardening.sql
 ```
 
-迁移会创建公开读取的 `avatars` bucket，并限制：
+第一项迁移创建头像 bucket；加固迁移移除匿名对象列表能力，并限制：
 
 - 图片格式只能是 JPG、PNG 或 WebP。
 - 单个文件最大 2 MB。
 - 登录用户只能上传、替换或删除 `{自己的 auth.uid()}/avatar`。
 - 头像公开 URL 保存到本人 `profiles.avatar_url`；昵称保存到 `profiles.display_name`。
 
-账户页位于 `/{lang}/account`。未登录访问会跳转到登录页，登录后的 Header 人像入口会进入账户页；退出登录和密码重设入口也统一放在账户页中。
+账户页位于 `/{lang}/account`。未登录访问会跳转到登录页；登录用户可以更新资料、移除头像或自助删除整个账户。删除功能通过服务端管理密钥删除 Auth 用户，并由外键级联清除 profile 与收藏。

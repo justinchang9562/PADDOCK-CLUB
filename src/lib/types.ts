@@ -5,7 +5,13 @@ export type LocalizedText = {
   en: string;
 };
 
-export type RaceStatus = "completed" | "live" | "upcoming";
+export type RaceStatus = "completed" | "awaiting_result" | "live" | "weekend" | "upcoming";
+
+export type RaceSessionWindow = {
+  name: "practice" | "qualifying" | "sprint" | "race";
+  start: string;
+  end: string;
+};
 
 export type Team = {
   id: string;
@@ -91,6 +97,7 @@ export type ClassificationRow = {
 };
 
 export type Race = {
+  id: string;
   season: number;
   round: number;
   circuitId: string;
@@ -99,8 +106,10 @@ export type Race = {
   startDate: string;
   endDate: string;
   startTime?: string;
+  sessions?: RaceSessionWindow[];
   status: RaceStatus;
   sprint?: boolean;
+  confirmation?: "confirmed" | "provisional";
   winner?: string;
   winningTime?: string;
   podium?: Array<{
@@ -115,6 +124,8 @@ export type Race = {
 export type NewsItem = {
   id: string;
   publishedAt: string;
+  expiresAt?: string;
+  kind?: "evergreen" | "event-status";
   category: "race" | "technical" | "team";
   publisher: string;
   title: LocalizedText;

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FavoriteButton } from "@/components/favorite-button";
@@ -26,8 +25,8 @@ export default async function CircuitPage({ params }: PageProps<"/[lang]/circuit
       <nav className="breadcrumbs"><Link href={`/${lang}/circuits`}>{lang === "zh" ? "赛道" : "Circuits"}</Link><Icon name="chevron"/><span>{circuit.countryCode}</span></nav>
       <section className="circuit-detail-hero">
         <div className="circuit-detail-media">
-          {circuit.image ? <Image className="circuit-detail-photo" src={circuit.image} alt={`${circuit.name} circuit`} fill priority sizes="100vw"/> : <div className="giant-track" aria-hidden="true"><Icon name="track"/></div>}
-          <div className="circuit-detail-layout" aria-hidden="true"><Image src={`/images/circuits/layouts/${circuit.id}.png`} alt="" fill priority sizes="(max-width: 700px) 70vw, 420px"/></div>
+          <div className="giant-track" aria-hidden="true"><Icon name="track"/></div>
+          <div className="circuit-detail-layout circuit-detail-code" aria-hidden="true"><strong>{circuit.countryCode}</strong><small>PADDOCK INDEX · TRACK FILE</small></div>
         </div>
         <div className="circuit-detail-copy"><span className="eyebrow">{circuit.city[lang]} · {circuit.country[lang]}</span><h1>{circuit.name}</h1><p>{circuit.character[lang]}</p><FavoriteButton itemKey={`circuit:${circuit.id}`} locale={lang}/></div>
       </section>

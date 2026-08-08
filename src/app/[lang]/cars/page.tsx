@@ -26,7 +26,7 @@ export default async function CarsPage({ params }: PageProps<"/[lang]/cars">) {
         <span><small>{lang === "zh" ? "最大电机功率" : "MGU-K maximum"}</small><strong>350 kW</strong></span>
       </section>
 
-      <section className="page-section compact"><SectionHeading eyebrow={lang === "zh" ? "赛车目录" : "Car index"} title={lang === "zh" ? "2026 的十一种答案。" : "Eleven answers to 2026."} description={lang === "zh" ? "从完整厂队到客户动力，每支车队以不同方式解决同一套技术规则。" : "From full works teams to customer power, each constructor solves the same rule set differently."}/><div className="card-grid two-col">{cars.map((car) => { const team = teams.find((item) => item.id === car.teamId)!; return <CarCard key={car.id} car={car} team={team} locale={lang}/>; })}</div></section>
+      <section className="page-section compact"><SectionHeading eyebrow={lang === "zh" ? "赛车目录" : "Car index"} title={lang === "zh" ? "2026 的十一种答案。" : "Eleven answers to 2026."} description={lang === "zh" ? "从完整厂队到客户动力，每支车队以不同方式解决同一套技术规则。" : "From full works teams to customer power, each constructor solves the same rule set differently."}/><div className="card-grid two-col">{cars.map((car, index) => { const team = teams.find((item) => item.id === car.teamId)!; return <CarCard key={car.id} car={car} team={team} locale={lang} priority={index === 0}/>; })}</div></section>
 
       <section className="page-section">
         <div className="disclosure-panel">

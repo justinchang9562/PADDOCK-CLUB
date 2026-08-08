@@ -14,7 +14,7 @@ export function RaceCard({ race, locale, featured = false }: { race: Race; local
       <div className="race-card-top">
         <span className="round">R{String(race.round).padStart(2, "0")}</span>
         <StatusLabel status={race.status} locale={locale} />
-        <FavoriteButton itemKey={`race:${race.season}:${race.round}`} locale={locale} compact />
+        <FavoriteButton itemKey={`race:${race.id}`} locale={locale} compact />
       </div>
       <Link className="race-card-link" href={href}>
         <div className="flag-code" aria-label={race.countryCode}>{race.countryCode}</div>
@@ -23,6 +23,7 @@ export function RaceCard({ race, locale, featured = false }: { race: Race; local
         <div className="race-card-meta">
           <span>{formatDateRange(race.startDate, race.endDate, locale)}</span>
           {race.sprint && <span className="sprint-chip">Sprint</span>}
+          {race.confirmation === "provisional" && <span className="sprint-chip">{locale === "zh" ? "待最终确认" : "Provisional"}</span>}
         </div>
         {race.podium && (
           <div className="winner-line">

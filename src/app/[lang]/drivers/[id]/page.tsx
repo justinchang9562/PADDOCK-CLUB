@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CarCard, TeamCard } from "@/components/entity-cards";
@@ -39,7 +38,7 @@ export default async function DriverPage({ params }: PageProps<"/[lang]/drivers/
           <div className="hero-actions"><FavoriteButton itemKey={`driver:${driver.id}`} locale={lang}/><Link className="secondary-button" href={`/${lang}/teams/${team.id}`}>{team.name}<Icon name="arrow"/></Link></div>
         </div>
         <div className="detail-portrait">
-          {driver.image ? <Image className="driver-portrait-image" src={driver.image} alt={`${driver.firstName} ${driver.lastName}, 2026 official portrait`} fill priority sizes="(max-width: 800px) 90vw, 42vw"/> : <div className="driver-identity large"><strong>{driver.code}</strong><small>{lang === "zh" ? "肖像素材待授权" : "Portrait pending license"}</small></div>}
+          <div className="driver-identity large"><strong>{driver.code}</strong><small>{lang === "zh" ? "独立车手资料" : "Independent driver profile"}</small></div>
           <strong>{driver.number}</strong>
         </div>
       </section>
